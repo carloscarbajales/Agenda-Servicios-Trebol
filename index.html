@@ -42,7 +42,6 @@
             </div>
             <form id="login-form" class="mt-8 space-y-6">
                 <div>
-                    <!-- Campo de entrada modificado para aceptar usuario o email -->
                     <input id="login-identifier" name="identifier" type="text" autocomplete="username" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Usuario o Email de acceso">
                     <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Contraseña">
                 </div>
@@ -72,7 +71,7 @@
         </div>
     </div>
     
-    <!-- Modal para actualizar la contraseña después de la recuperación -->
+    <!-- Modal para actualizar la contraseña (usado por el link de recuperación) -->
     <div id="update-password-modal" class="modal">
         <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold text-center">Elige tu Nueva Contraseña</h2>
@@ -99,7 +98,16 @@
                 <a href="#" data-view="objectives" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Objetivos"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></a>
                 <a href="#" data-view="reports" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Informes"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m16 14-3-3-2 2-3-3"/></svg></a>
                 <a href="#" data-view="config" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Configuración"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.4l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2.4l.15.08a2 2 0 0 0 .73 2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></a>
-                <div class="mt-auto"><a href="#" id="logout-button" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Cerrar Sesión"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg></a></div>
+                
+                <div class="mt-auto flex flex-col items-center space-y-6">
+                    <!-- NUEVO: Botón Mi Perfil -->
+                    <a href="#" data-view="profile" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Mi Perfil">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </a>
+                    <a href="#" id="logout-button" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Cerrar Sesión">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    </a>
+                </div>
             </div>
 
             <!-- Contenido Principal -->
@@ -118,6 +126,28 @@
                     <div id="services-view" class="view">...</div>
                     <div id="objectives-view" class="view">...</div>
                     <div id="reports-view" class="view">...</div>
+                    
+                    <!-- NUEVO: Vista de Perfil de Usuario -->
+                    <div id="profile-view" class="view">
+                         <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                             <h2 class="text-2xl font-bold mb-6">Mi Perfil</h2>
+                             <div class="space-y-4 mb-8">
+                                 <p><strong>Usuario:</strong> <span id="profile-username"></span></p>
+                                 <p><strong>Email:</strong> <span id="profile-email"></span></p>
+                                 <p><strong>Rol:</strong> <span id="profile-role"></span></p>
+                             </div>
+                             
+                             <h3 class="text-xl font-bold border-t pt-6 border-gray-200 dark:border-gray-700">Cambiar Contraseña</h3>
+                             <p class="text-sm text-gray-500 mb-4">Introduce una nueva contraseña para tu cuenta.</p>
+                             <form id="change-password-form" class="space-y-4">
+                                 <input id="change-new-password" type="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700" placeholder="Nueva contraseña">
+                                 <input id="change-confirm-password" type="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700" placeholder="Confirmar nueva contraseña">
+                                 <p id="change-password-error" class="text-red-500 text-sm"></p>
+                                 <button type="submit" class="w-full py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Actualizar Contraseña</button>
+                             </form>
+                         </div>
+                    </div>
+
                     <div id="config-view" class="view">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Columna Izquierda: Gestión de Email y Empleados -->
@@ -163,14 +193,11 @@
                                 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6 role-gerente role-gestor">
                                     <div>
                                         <h3 class="font-bold">Miembros del Equipo</h3>
-                                        <!-- NUEVO: Filtro de Farmacia para Gestores -->
                                         <div class="mt-4 role-gestor" style="display: none;">
                                             <label for="pharmacy-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por Farmacia</label>
                                             <select id="pharmacy-filter" class="w-full p-2 mt-1 rounded bg-gray-200 dark:bg-gray-700"></select>
                                         </div>
-                                        <ul id="team-members-list" class="mt-4 space-y-3">
-                                            <!-- La lista de usuarios se generará aquí -->
-                                        </ul>
+                                        <ul id="team-members-list" class="mt-4 space-y-3"></ul>
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +224,6 @@
         let userData = { role: 'empleado', pharmacy_id: null };
         let centralEmail = null;
         let managedPharmacies = [];
-        let isPasswordRecoveryFlow = false;
 
         // --- ELEMENTOS DEL DOM ---
         const loginView = document.getElementById('login-view');
@@ -216,6 +242,7 @@
         const resetPasswordForm = document.getElementById('reset-password-form');
         const updatePasswordModal = document.getElementById('update-password-modal');
         const updatePasswordForm = document.getElementById('update-password-form');
+        const changePasswordForm = document.getElementById('change-password-form');
         
         // --- FUNCIÓN DE NOTIFICACIONES ---
         const showNotification = (message, type = 'success') => {
@@ -429,11 +456,30 @@
             const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
             if (error) {
                 errorElement.textContent = 'Error al actualizar la contraseña. Inténtalo de nuevo.';
-                console.error("Update password error:", error);
             } else {
                 showNotification('Contraseña actualizada con éxito.', 'success');
                 updatePasswordModal.style.display = 'none';
-                isPasswordRecoveryFlow = false; // Restablecer el flag
+            }
+        });
+        
+        // Lógica para el formulario de cambio de contraseña en el perfil
+        changePasswordForm.addEventListener('submit', async (e) => {
+             e.preventDefault();
+            const newPassword = document.getElementById('change-new-password').value;
+            const confirmPassword = document.getElementById('change-confirm-password').value;
+            const errorElement = document.getElementById('change-password-error');
+            errorElement.textContent = '';
+
+            if (newPassword.length < 6) { errorElement.textContent = 'La contraseña debe tener al menos 6 caracteres.'; return; }
+            if (newPassword !== confirmPassword) { errorElement.textContent = 'Las contraseñas no coinciden.'; return; }
+            
+            const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+             if (error) {
+                errorElement.textContent = 'Error al actualizar la contraseña.';
+                console.error("Change password error:", error);
+            } else {
+                showNotification('Contraseña actualizada con éxito.', 'success');
+                changePasswordForm.reset();
             }
         });
 
@@ -457,7 +503,7 @@
                     if (profileError) { showNotification("Usuario creado, pero no se pudo guardar su perfil.", "error"); } 
                     else {
                         showNotification(`Usuario ${username} (${role}) creado.`, "success");
-                        await supabaseClient.auth.resetPasswordForEmail(email);
+                        await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split('#')[0] });
                         createEmployeeForm.reset();
                         if(userData.role === 'gerente') document.getElementById('employee-pharmacy').value = userData.pharmacy_id;
                         await loadUsers(pharmacyFilter.value);
@@ -472,6 +518,12 @@
         const setupUIForUser = () => {
             document.getElementById('user-name').textContent = currentUser.email;
             document.getElementById('user-role').textContent = `Rol: ${userData.role}`;
+            
+            // Llenar datos del perfil
+            document.getElementById('profile-username').textContent = userData.username || 'No definido';
+            document.getElementById('profile-email').textContent = currentUser.email;
+            document.getElementById('profile-role').textContent = userData.role.charAt(0).toUpperCase() + userData.role.slice(1);
+
             document.querySelectorAll('.role-gerente, .role-gestor').forEach(el => el.style.display = 'none');
             
             if (userData.role === 'gerente') {
@@ -495,22 +547,16 @@
 
         // --- INICIALIZACIÓN Y MANEJO DE ESTADO DE AUTENTICACIÓN ---
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
-            // Manejar el flujo de recuperación de contraseña como caso especial
             if (event === 'PASSWORD_RECOVERY') {
-                isPasswordRecoveryFlow = true;
                 updatePasswordModal.style.display = 'flex';
                 loginView.style.display = 'none';
                 appView.style.display = 'none';
-                return; // Detener para no procesar como una sesión normal
-            }
-
-            // Si estamos en el flujo de recuperación, no hacer nada más hasta que se resuelva
-            if (isPasswordRecoveryFlow) {
-                return;
-            }
-
-            // Flujo normal de inicio/cierre de sesión
-            if (session) {
+            } else if (session) {
+                // Si hay una sesión y el modal de actualización está abierto, 
+                // significa que la contraseña se acaba de actualizar. Lo cerramos.
+                if (updatePasswordModal.style.display === 'flex') {
+                    updatePasswordModal.style.display = 'none';
+                }
                 await initializeApp(session);
             } else {
                 showLoginView();
