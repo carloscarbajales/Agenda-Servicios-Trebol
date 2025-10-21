@@ -179,17 +179,18 @@
         // Importa las funciones que necesitas de los SDKs de Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
 
         // --- CONFIGURACIÓN DE FIREBASE ---
-        // IMPORTANTE: Reemplaza este objeto con la configuración de tu propio proyecto de Firebase
+        // Estas son tus claves de configuración reales
         const firebaseConfig = {
-            apiKey: "AIzaSyB3oJYaDv2SV0LOY7NSHXFkjWjcJuai8KQ",
-            authDomain: "agenda-servicios-trebol.firebaseapp.com",
-            projectId: "agenda-servicios-trebol",
-            storageBucket: "agenda-servicios-trebol.firebasestorage.app",
-            messagingSenderId: "301625300653",
-            appId: "1:301625300653:web:4b82afa0ddb1c9e51cd824"
+          apiKey: "AIzaSyB3oJYaDv2SV0LOY7NSHXFkjWjcJuai8KQ",
+          authDomain: "agenda-servicios-trebol.firebaseapp.com",
+          projectId: "agenda-servicios-trebol",
+          storageBucket: "agenda-servicios-trebol.firebasestorage.app",
+          messagingSenderId: "301625300653",
+          appId: "1:301625300653:web:4b82afa0ddb1c9e51cd824",
+          measurementId: "G-MP3T7EX6HL"
         };
 
         // Inicializa Firebase
@@ -220,17 +221,29 @@
                 currentUser = user;
                 
                 // Obtenemos el rol del usuario desde Firestore
-                const userDocRef = doc(db, "users", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
+                try {
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
 
-                if (userDocSnap.exists()) {
-                    userRole = userDocSnap.data().role || 'empleado';
-                } else {
-                    // Si no existe el documento, asignamos rol por defecto.
-                    // En un sistema real, esto debería manejarse con más seguridad.
-                    console.log("No se encontró el rol para el usuario, se asigna 'empleado'.");
-                    userRole = 'empleado';
+                    if (userDocSnap.exists()) {
+                        userRole = userDocSnap.data().role || 'empleado';
+                    } else {
+                        // Si el documento del usuario no existe, créalo con un rol predeterminado.
+                        // Esto fallará si las reglas de escritura no están configuradas, pero es una buena práctica.
+                        console.log("No se encontró el documento del usuario, creando uno nuevo con rol de 'empleado'.");
+                        await setDoc(userDocRef, { role: 'empleado' });
+                        userRole = 'empleado';
+                    }
+                } catch (error) {
+                    console.error("Error al obtener el rol del usuario:", error);
+                    console.error("--- POSIBLE SOLUCIÓN ---");
+                    console.error("Este error usualmente significa que las reglas de seguridad de Firestore no permiten la lectura/escritura.");
+                    console.error("Ve a tu consola de Firebase -> Firestore Database -> Reglas y asegúrate de que los usuarios autenticados tengan permiso para leer la colección 'users'.");
+                    console.error("Ejemplo de regla: match /users/{userId} { allow read, write: if request.auth != null && request.auth.uid == userId; }");
+                    loginError.textContent = "Error de permisos al conectar con la base de datos.";
+                    userRole = 'empleado'; // Por defecto al rol con menos privilegios en caso de error
                 }
+
 
                 setupUIForUser();
                 showView('dashboard');
@@ -255,7 +268,7 @@
 
             signInWithEmailAndPassword(auth, email, password)
                 .catch((error) => {
-                    console.error("Error de login:", error.message);
+                    console.error("Error de login:", error.code, error.message);
                     loginError.textContent = 'Correo o contraseña incorrectos.';
                 });
         });
@@ -316,5 +329,4 @@
     </script>
 </body>
 </html>
-
 
