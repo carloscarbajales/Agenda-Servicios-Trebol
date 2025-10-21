@@ -16,6 +16,19 @@
         .notification.show { opacity: 1; }
         .notification.success { background-color: #10B981; }
         .notification.error { background-color: #EF4444; }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -29,14 +42,49 @@
             </div>
             <form id="login-form" class="mt-8 space-y-6">
                 <div>
-                    <input id="email" name="email" type="email" autocomplete="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Email de acceso">
+                    <!-- Campo de entrada modificado para aceptar usuario o email -->
+                    <input id="login-identifier" name="identifier" type="text" autocomplete="username" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Usuario o Email de acceso">
                     <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Contraseña">
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="text-sm">
+                        <a href="#" id="forgot-password-link" class="font-medium text-indigo-600 hover:text-indigo-500">
+                            ¿Has olvidado tu contraseña?
+                        </a>
+                    </div>
                 </div>
                 <p id="login-error" class="text-red-500 text-sm mt-2"></p>
                 <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Acceder</button>
             </form>
         </div>
     </div>
+    
+    <!-- Modal para restablecer contraseña -->
+    <div id="reset-password-modal" class="modal">
+        <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg relative">
+            <button id="close-modal-button" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 text-2xl font-bold">&times;</button>
+            <h2 class="text-2xl font-bold text-center">Restablecer Contraseña</h2>
+            <p class="text-center text-sm text-gray-600 dark:text-gray-400">Introduce tu nombre de usuario o email. Se enviará un enlace de recuperación al email central de la farmacia.</p>
+            <form id="reset-password-form" class="space-y-4">
+                <input id="reset-identifier-input" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700" placeholder="Usuario o Email">
+                <button type="submit" class="w-full py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Enviar enlace</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- NUEVO: Modal para actualizar la contraseña después de la recuperación -->
+    <div id="update-password-modal" class="modal">
+        <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold text-center">Elige tu Nueva Contraseña</h2>
+            <form id="update-password-form" class="space-y-4">
+                <input id="new-password" type="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700" placeholder="Nueva contraseña">
+                <input id="confirm-password" type="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700" placeholder="Confirmar nueva contraseña">
+                <p id="update-password-error" class="text-red-500 text-sm"></p>
+                <button type="submit" class="w-full py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Guardar Contraseña</button>
+            </form>
+        </div>
+    </div>
+
 
     <!-- Aplicación Principal -->
     <div id="app-view" class="hidden">
@@ -72,7 +120,7 @@
                     <div id="reports-view" class="view">...</div>
                     <div id="config-view" class="view">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                             <!-- Columna de Gestión de Empleados y Email -->
+                            <!-- Columna Izquierda: Gestión de Email y Empleados -->
                             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6">
                                 <div class="role-gerente role-gestor">
                                     <h3 class="font-bold">Email Central de Gestión</h3>
@@ -87,7 +135,7 @@
                                         <input type="text" id="employee-username" placeholder="Nombre de usuario (ej: juan.perez)" required class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
                                         <select id="employee-role" required class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
                                             <option value="empleado">Empleado</option>
-                                            <option value="gerente" class="role-gestor">Gerente</option>
+                                            <option value="gerente" class="role-gestor" style="display: none;">Gerente</option>
                                         </select>
                                         <select id="employee-pharmacy" required class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
                                             <option value="">Seleccionar farmacia...</option>
@@ -96,21 +144,34 @@
                                     </form>
                                 </div>
                             </div>
-                            <!-- Columna de Gestión de Farmacias (solo para gestor) -->
-                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6 role-gestor">
-                                <div>
-                                    <h3 class="font-bold">Gestión de Farmacias</h3>
-                                     <form id="create-pharmacy-form" class="space-y-4 mt-4">
-                                        <input type="text" id="pharmacy-name" placeholder="Nombre de la nueva farmacia" required class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
-                                        <input type="text" id="pharmacy-address" placeholder="Dirección (opcional)" class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
-                                        <button type="submit" class="w-full bg-purple-600 text-white p-2 rounded hover:bg-purple-700">Crear Farmacia</button>
-                                    </form>
+                            <!-- Columna Derecha: Gestión de Farmacias y Miembros del Equipo -->
+                            <div class="space-y-6">
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6 role-gestor">
+                                    <div>
+                                        <h3 class="font-bold">Gestión de Farmacias</h3>
+                                         <form id="create-pharmacy-form" class="space-y-4 mt-4">
+                                            <input type="text" id="pharmacy-name" placeholder="Nombre de la nueva farmacia" required class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
+                                            <input type="text" id="pharmacy-address" placeholder="Dirección (opcional)" class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
+                                            <button type="submit" class="w-full bg-purple-600 text-white p-2 rounded hover:bg-purple-700">Crear Farmacia</button>
+                                        </form>
+                                    </div>
+                                    <div class="mt-6">
+                                        <h3 class="font-bold">Farmacias Existentes</h3>
+                                        <ul id="pharmacies-list" class="mt-2 space-y-2"></ul>
+                                    </div>
                                 </div>
-                                <div class="mt-6">
-                                    <h3 class="font-bold">Farmacias Existentes</h3>
-                                    <ul id="pharmacies-list" class="mt-2 space-y-2">
-                                        <!-- La lista se llenará dinámicamente -->
-                                    </ul>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6 role-gerente role-gestor">
+                                    <div>
+                                        <h3 class="font-bold">Miembros del Equipo</h3>
+                                        <!-- NUEVO: Filtro de Farmacia para Gestores -->
+                                        <div class="mt-4 role-gestor" style="display: none;">
+                                            <label for="pharmacy-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por Farmacia</label>
+                                            <select id="pharmacy-filter" class="w-full p-2 mt-1 rounded bg-gray-200 dark:bg-gray-700"></select>
+                                        </div>
+                                        <ul id="team-members-list" class="mt-4 space-y-3">
+                                            <!-- La lista de usuarios se generará aquí -->
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -123,81 +184,6 @@
     <div id="notification-container"></div>
 
     <script type="module">
-        /*
-        --------------------------------------------------------------------------
-        --- ¡ACCIÓN URGENTE REQUERIDA! CORRECCIÓN DE ERROR DE BASE DE DATOS ---
-        --------------------------------------------------------------------------
-        ¡Hola! El error "stack depth limit exceeded" que estás viendo no es un fallo
-        del código de esta página, sino un problema de recursión infinita en las
-        reglas de seguridad de la base de datos que te proporcioné en el paso anterior.
-
-        Pido disculpas por el error. La buena noticia es que tiene una solución sencilla.
-
-        ¿QUÉ HA PASADO?
-        Las reglas de seguridad intentan leer el "rol" del usuario para ver si tiene
-        permiso, pero para leer el "rol", necesitan aplicar las reglas de seguridad.
-        Esto crea un bucle infinito (Regla -> Leer Rol -> Regla -> Leer Rol...).
-
-        ¿CÓMO SOLUCIONARLO?
-        Necesitas reemplazar las funciones y políticas que crean este bucle. Por favor,
-        sigue estos dos pasos en el SQL Editor de tu proyecto de Supabase:
-
-        PASO 1: BORRA LAS POLÍTICAS Y FUNCIONES ANTIGUAS
-        Ejecuta este script para limpiar las reglas incorrectas. Es seguro hacerlo.
-
-        DROP POLICY IF EXISTS "Los usuarios pueden ver los perfiles relevantes" ON public.users;
-        DROP POLICY IF EXISTS "Los administradores pueden crear perfiles de usuario" ON public.users;
-        DROP POLICY IF EXISTS "Cualquier usuario autenticado puede leer la configuración" ON public.config;
-        DROP POLICY IF EXISTS "Los administradores pueden actualizar la configuración" ON public.config;
-        DROP POLICY IF EXISTS "Los gestores pueden gestionar todas las farmacias" ON public.pharmacies;
-        DROP POLICY IF EXISTS "Gerentes y empleados pueden ver su propia farmacia" ON public.pharmacies;
-        DROP FUNCTION IF EXISTS get_my_role();
-        DROP FUNCTION IF EXISTS get_my_pharmacy_id();
-
-
-        PASO 2: CREA LAS NUEVAS FUNCIONES Y POLÍTICAS CORREGIDAS
-        Ahora, ejecuta este script completo. Utiliza una técnica segura (SECURITY DEFINER)
-        para evitar el bucle infinito.
-
-        -- Crear funciones que evitan el bucle de RLS de forma segura
-        CREATE OR REPLACE FUNCTION get_my_role()
-        RETURNS TEXT LANGUAGE plpgsql SECURITY DEFINER AS $$
-        BEGIN
-          RETURN (SELECT role FROM public.users WHERE id = auth.uid());
-        END;
-        $$;
-
-        CREATE OR REPLACE FUNCTION get_my_pharmacy_id()
-        RETURNS INT LANGUAGE plpgsql SECURITY DEFINER AS $$
-        BEGIN
-          RETURN (SELECT pharmacy_id FROM public.users WHERE id = auth.uid());
-        END;
-        $$;
-
-        -- Volver a crear las políticas usando las funciones seguras
-        -- Políticas para la tabla 'users'
-        CREATE POLICY "Usuarios pueden ver perfiles relevantes" ON public.users FOR SELECT USING (
-            id = auth.uid() OR -- Un usuario puede ver su propio perfil
-            get_my_role() = 'gestor' OR -- Un gestor puede ver todos los perfiles
-            (get_my_role() = 'gerente' AND pharmacy_id = get_my_pharmacy_id()) -- Un gerente puede ver los perfiles de su farmacia
-        );
-        CREATE POLICY "Administradores pueden crear perfiles de usuario" ON public.users FOR INSERT WITH CHECK (
-            get_my_role() IN ('gerente', 'gestor') AND
-            (get_my_role() = 'gestor' OR pharmacy_id = get_my_pharmacy_id())
-        );
-
-        -- Políticas para la tabla 'config'
-        CREATE POLICY "Cualquier usuario autenticado puede leer la configuración" ON public.config FOR SELECT USING (auth.uid() IS NOT NULL);
-        CREATE POLICY "Administradores pueden actualizar la configuración" ON public.config FOR UPDATE USING (get_my_role() IN ('gerente', 'gestor'));
-
-        -- Políticas para la tabla 'pharmacies'
-        CREATE POLICY "Gestores pueden gestionar todas las farmacias" ON public.pharmacies FOR ALL USING (get_my_role() = 'gestor');
-        CREATE POLICY "Personal puede ver su propia farmacia" ON public.pharmacies FOR SELECT USING (id = get_my_pharmacy_id());
-
-        --------------------------------------------------------------------------
-        Una vez que ejecutes estos dos scripts, recarga la página. ¡El error habrá desaparecido!
-        --------------------------------------------------------------------------
-        */
         const { createClient } = supabase;
 
         // --- CONFIGURACIÓN DE SUPABASE ---
@@ -219,10 +205,16 @@
         const logoutButton = document.getElementById('logout-button');
         const loginError = document.getElementById('login-error');
         const createEmployeeForm = document.getElementById('create-employee-form');
-        const configCentralEmailForm = document.getElementById('config-central-email-form');
-        const centralEmailInput = document.getElementById('central-email');
         const createPharmacyForm = document.getElementById('create-pharmacy-form');
+        const configCentralEmailForm = document.getElementById('config-central-email-form');
+        const pharmacyFilter = document.getElementById('pharmacy-filter');
         const notificationContainer = document.getElementById('notification-container');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const resetPasswordModal = document.getElementById('reset-password-modal');
+        const closeModalButton = document.getElementById('close-modal-button');
+        const resetPasswordForm = document.getElementById('reset-password-form');
+        const updatePasswordModal = document.getElementById('update-password-modal');
+        const updatePasswordForm = document.getElementById('update-password-form');
         
         // --- FUNCIÓN DE NOTIFICACIONES ---
         const showNotification = (message, type = 'success') => {
@@ -236,183 +228,243 @@
                 setTimeout(() => notification.remove(), 500);
             }, 5000);
         };
+        
+        // --- VISTAS GLOBALES ---
+        const showAppView = () => {
+            loginView.style.display = 'none';
+            resetPasswordModal.style.display = 'none';
+            updatePasswordModal.style.display = 'none';
+            appView.style.display = 'block';
+        };
+        const showLoginView = () => {
+            appView.style.display = 'none';
+            resetPasswordModal.style.display = 'none';
+            updatePasswordModal.style.display = 'none';
+            loginView.style.display = 'flex';
+        };
+
+        // --- LÓGICA DE GESTIÓN DE EQUIPO ---
+        const loadUsers = async (pharmacyId = null) => {
+            const teamList = document.getElementById('team-members-list');
+            teamList.innerHTML = '<p class="text-gray-500">Cargando equipo...</p>';
+            try {
+                let query = supabaseClient.from('users').select('username, email, role, pharmacies(name)');
+                if (pharmacyId && pharmacyId !== 'all') {
+                    query = query.eq('pharmacy_id', pharmacyId);
+                }
+                const { data, error } = await query;
+                if (error) throw error;
+                teamList.innerHTML = data.length === 0 ? '<p class="text-gray-500">No hay miembros que coincidan con el filtro.</p>' :
+                    data.map(user => `
+                        <li class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-gray-800 dark:text-gray-200">${user.username || 'Sin nombre'}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">${user.email}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-sm px-2 py-1 rounded-full ${user.role === 'gerente' ? 'bg-indigo-200 text-indigo-800' : 'bg-green-200 text-green-800'}">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</p>
+                                <p class="text-xs text-gray-500 mt-1">${user.pharmacies ? user.pharmacies.name : 'Sin asignar'}</p>
+                            </div>
+                        </li>`).join('');
+            } catch (error) {
+                console.error("Error cargando usuarios:", error.message);
+                teamList.innerHTML = '<p class="text-red-500">Error al cargar el equipo.</p>';
+            }
+        };
 
         // --- LÓGICA DE GESTIÓN DE FARMACIAS ---
         const loadPharmacies = async () => {
             try {
                 const { data, error } = await supabaseClient.from('pharmacies').select('*');
                 if (error) throw error;
-
                 managedPharmacies = data;
                 
-                // Renderizar lista para el gestor
                 const pharmaciesList = document.getElementById('pharmacies-list');
-                pharmaciesList.innerHTML = managedPharmacies.map(p => `<li class="p-2 bg-gray-100 dark:bg-gray-700 rounded">${p.name}</li>`).join('');
-
-                // Llenar el dropdown para crear empleados
+                if (pharmaciesList) pharmaciesList.innerHTML = managedPharmacies.map(p => `<li class="p-2 bg-gray-100 dark:bg-gray-700 rounded">${p.name}</li>`).join('');
+                
                 const employeePharmacySelect = document.getElementById('employee-pharmacy');
-                employeePharmacySelect.innerHTML = '<option value="">Seleccionar farmacia...</option>'; // Reset
-                let pharmaciesForDropdown = [];
-
-                if (userData.role === 'gestor') {
-                    pharmaciesForDropdown = managedPharmacies;
-                } else if (userData.role === 'gerente' && userData.pharmacy_id) {
-                    const myPharmacy = managedPharmacies.find(p => p.id === userData.pharmacy_id);
-                    if (myPharmacy) pharmaciesForDropdown = [myPharmacy];
-                }
+                employeePharmacySelect.innerHTML = '<option value="">Seleccionar farmacia...</option>';
+                pharmacyFilter.innerHTML = '<option value="all">Todas las farmacias</option>';
+                
+                let pharmaciesForDropdown = (userData.role === 'gestor') ? managedPharmacies : 
+                    (userData.role === 'gerente' && userData.pharmacy_id) ? managedPharmacies.filter(p => p.id === userData.pharmacy_id) : [];
                 
                 pharmaciesForDropdown.forEach(p => {
                     const option = document.createElement('option');
                     option.value = p.id;
                     option.textContent = p.name;
-                    employeePharmacySelect.appendChild(option);
+                    employeePharmacySelect.appendChild(option.cloneNode(true));
+                    pharmacyFilter.appendChild(option);
                 });
-
                 if (userData.role === 'gerente') employeePharmacySelect.value = userData.pharmacy_id;
-
             } catch (error) {
                  console.error("Error cargando farmacias:", error.message);
-                 if (error.message.includes('depth limit exceeded') || error.message.includes('recursion')) {
-                    showNotification("¡Error Grave! Bucle de permisos detectado en la BD. Sigue las instrucciones en los comentarios del código.", "error");
-                } else {
-                    showNotification("No se pudieron cargar las farmacias.", "error");
-                }
+                 showNotification("No se pudieron cargar las farmacias.", "error");
             }
         };
 
-        createPharmacyForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('pharmacy-name').value.trim();
-            const address = document.getElementById('pharmacy-address').value.trim();
-            if (!name) {
-                showNotification("El nombre de la farmacia es obligatorio.", "error");
-                return;
-            }
-
-            const { error } = await supabaseClient.from('pharmacies').insert({ name, address });
-            if (error) {
-                showNotification("Error al crear la farmacia.", "error");
-                console.error("Error creando farmacia:", error.message);
-            } else {
-                showNotification("Farmacia creada con éxito.", "success");
-                createPharmacyForm.reset();
-                await loadPharmacies(); // Recargar la lista
-            }
-        });
-
+        if (createPharmacyForm) {
+            createPharmacyForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('pharmacy-name').value.trim();
+                const address = document.getElementById('pharmacy-address').value.trim();
+                if (!name) return showNotification("El nombre de la farmacia es obligatorio.", "error");
+                const { error } = await supabaseClient.from('pharmacies').insert({ name, address });
+                if (error) { showNotification("Error al crear la farmacia.", "error"); } 
+                else {
+                    showNotification("Farmacia creada con éxito.", "success");
+                    createPharmacyForm.reset();
+                    await loadPharmacies();
+                }
+            });
+        }
+        
         // --- LÓGICA DE CONFIGURACIÓN ---
         const loadConfig = async () => {
-            const { data, error } = await supabaseClient.from('config').select('central_email').eq('id', 1).single();
-            if (error) {
-                console.error("Error cargando configuración:", error.message);
-            } else if (data) {
+            const { data } = await supabaseClient.from('config').select('central_email').eq('id', 1).single();
+            if (data) {
                 centralEmail = data.central_email;
-                if (centralEmail) centralEmailInput.value = centralEmail;
+                const centralEmailInput = document.getElementById('central-email');
+                if (centralEmailInput && centralEmail) centralEmailInput.value = centralEmail;
             }
         };
 
-        configCentralEmailForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const newEmail = centralEmailInput.value.trim();
-            const { error } = await supabaseClient.from('config').update({ central_email: newEmail }).eq('id', 1);
-            if (error) {
-                showNotification("Error al guardar el email. Revisa tus permisos.", "error");
-            } else {
-                centralEmail = newEmail;
-                showNotification("Email central guardado.", "success");
-            }
-        });
-
-        // --- LÓGICA DE AUTENTICACIÓN ---
-        const checkUserSession = async () => {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                try {
-                    const { data, error } = await supabaseClient.from('users').select('*').eq('id', currentUser.id).single();
-
-                    if (error) throw error; 
-
-                    if (!data) {
-                         userData = { role: 'empleado' }; // Rol por defecto si no hay perfil
-                    } else {
-                        userData = data;
-                    }
-
-                    await loadConfig();
-                    setupUIForUser();
-                    if(userData.role === 'gestor' || userData.role === 'gerente') await loadPharmacies();
-                    
-                    loginView.style.display = 'none';
-                    appView.style.display = 'block';
-
-                } catch(error) {
-                    console.error("Error crítico al iniciar sesión:", error.message);
-                    if (error.message.includes('depth limit exceeded') || error.message.includes('recursion')) {
-                        showNotification("¡Error Grave! Bucle de permisos detectado en la BD. Sigue las instrucciones en los comentarios del código para solucionarlo.", "error");
-                    } else {
-                        showNotification("Error al obtener el perfil de usuario. Contacta al administrador.", "error");
-                    }
-                    await supabaseClient.auth.signOut();
+        if (configCentralEmailForm) {
+            configCentralEmailForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const newEmail = document.getElementById('central-email').value.trim();
+                const { error } = await supabaseClient.from('config').update({ central_email: newEmail }).eq('id', 1);
+                if (error) { showNotification("Error al guardar el email.", "error"); } 
+                else {
+                    centralEmail = newEmail;
+                    showNotification("Email central guardado.", "success");
                 }
-
-            } else {
-                loginView.style.display = 'flex';
-                appView.style.display = 'none';
+            });
+        }
+        
+        // --- LÓGICA DE AUTENTICACIÓN Y SESIÓN ---
+        const initializeApp = async (session) => {
+            currentUser = session.user;
+            try {
+                const { data, error } = await supabaseClient.from('users').select('*').eq('id', currentUser.id).single();
+                if (error) throw error; 
+                userData = data || { role: 'empleado' };
+                setupUIForUser();
+                await loadConfig();
+                if(userData.role === 'gestor' || userData.role === 'gerente') {
+                    await loadPharmacies();
+                    await loadUsers();
+                }
+                showAppView();
+            } catch(error) {
+                console.error("Error crítico al iniciar sesión:", error.message);
+                showNotification("Error al obtener el perfil de usuario.", "error");
+                await supabaseClient.auth.signOut();
+                showLoginView();
             }
         };
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             loginError.textContent = '';
-            const { error } = await supabaseClient.auth.signInWithPassword({ email: loginForm.email.value, password: loginForm.password.value });
-            if (error) {
-                loginError.textContent = 'Email o contraseña incorrectos.';
-            } else {
-                checkUserSession();
+            const identifier = document.getElementById('login-identifier').value.trim();
+            const password = document.getElementById('password').value;
+            let email = identifier;
+
+            if (!identifier.includes('@')) {
+                const { data, error } = await supabaseClient.from('users').select('email').eq('username', identifier).single();
+                if (error || !data) { loginError.textContent = 'Usuario o contraseña incorrectos.'; return; }
+                email = data.email;
             }
+
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) { loginError.textContent = 'Usuario o contraseña incorrectos.'; }
         });
 
         logoutButton.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
-            window.location.reload();
         });
+
+        // --- LÓGICA DE RESTABLECIMIENTO DE CONTRASEÑA ---
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetPasswordModal.style.display = 'flex';
+        });
+
+        closeModalButton.addEventListener('click', () => {
+            resetPasswordModal.style.display = 'none';
+        });
+
+        resetPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const identifier = document.getElementById('reset-identifier-input').value.trim();
+            if (!identifier) return showNotification('Por favor, introduce tu usuario o email.', 'error');
+            let email = identifier;
+
+            if (!identifier.includes('@')) {
+                const { data, error } = await supabaseClient.from('users').select('email').eq('username', identifier).single();
+                if (error || !data) return showNotification('No se encontró un usuario con ese nombre.', 'error');
+                email = data.email;
+            }
+
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split('#')[0] });
+            if (error) { showNotification('Error al enviar el correo.', 'error'); } 
+            else {
+                showNotification('Se ha enviado un enlace de recuperación al email central.', 'success');
+                resetPasswordModal.style.display = 'none';
+            }
+        });
+
+        updatePasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const errorElement = document.getElementById('update-password-error');
+            errorElement.textContent = '';
+
+            if (newPassword.length < 6) { errorElement.textContent = 'La contraseña debe tener al menos 6 caracteres.'; return; }
+            if (newPassword !== confirmPassword) { errorElement.textContent = 'Las contraseñas no coinciden.'; return; }
+
+            const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+            if (error) {
+                errorElement.textContent = 'Error al actualizar la contraseña. Inténtalo de nuevo.';
+                console.error("Update password error:", error);
+            } else {
+                showNotification('Contraseña actualizada con éxito.', 'success');
+                updatePasswordModal.style.display = 'none';
+            }
+        });
+
 
         // --- LÓGICA DE GESTIÓN DE EMPLEADOS ---
-        createEmployeeForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('employee-username').value.trim().toLowerCase().replace(/\s+/g, '.');
-            const role = document.getElementById('employee-role').value;
-            const pharmacy_id = document.getElementById('employee-pharmacy').value;
-
-            if (!username || !role || !pharmacy_id) { showNotification("Todos los campos son obligatorios.", "error"); return; }
-            if (!centralEmail) { showNotification("Guarda un email central válido primero.", "error"); return; }
-            
-            const [base, domain] = centralEmail.split('@');
-            const email = `${base}+${username}@${domain}`;
-            const password = Math.random().toString(36).slice(-10) + "A1!";
-
-            const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
-            if (authError) {
-                showNotification(authError.message, "error");
-                return;
-            }
-
-            if (authData.user) {
-                const { error: profileError } = await supabaseClient
-                    .from('users')
-                    .insert({ id: authData.user.id, role, username, email, pharmacy_id });
-                
-                if (profileError) {
-                    showNotification("Usuario creado en auth, pero no se pudo guardar su perfil.", "error");
-                } else {
-                    showNotification(`Usuario ${username} (${role}) creado con éxito.`, "success");
-                    await supabaseClient.auth.resetPasswordForEmail(email);
-                    createEmployeeForm.reset();
-                    if(userData.role === 'gerente') document.getElementById('employee-pharmacy').value = userData.pharmacy_id;
+        if (createEmployeeForm) {
+            createEmployeeForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('employee-username').value.trim().toLowerCase().replace(/\s+/g, '.');
+                const role = document.getElementById('employee-role').value;
+                const pharmacy_id = document.getElementById('employee-pharmacy').value;
+                if (!username || !role || !pharmacy_id) return showNotification("Todos los campos son obligatorios.", "error");
+                if (!centralEmail) return showNotification("Guarda un email central válido primero.", "error");
+                const [base, domain] = centralEmail.split('@');
+                const email = `${base}+${username}@${domain}`;
+                const password = Math.random().toString(36).slice(-10) + "A1!";
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+                if (authError) return showNotification(authError.message, "error");
+                if (authData.user) {
+                    const { error: profileError } = await supabaseClient.from('users').insert({ id: authData.user.id, role, username, email, pharmacy_id });
+                    if (profileError) { showNotification("Usuario creado, pero no se pudo guardar su perfil.", "error"); } 
+                    else {
+                        showNotification(`Usuario ${username} (${role}) creado.`, "success");
+                        await supabaseClient.auth.resetPasswordForEmail(email);
+                        createEmployeeForm.reset();
+                        if(userData.role === 'gerente') document.getElementById('employee-pharmacy').value = userData.pharmacy_id;
+                        await loadUsers(pharmacyFilter.value);
+                    }
                 }
-            }
-        });
+            });
+        }
+        
+        pharmacyFilter.addEventListener('change', () => loadUsers(pharmacyFilter.value));
 
         // --- LÓGICA DE UI ---
         const setupUIForUser = () => {
@@ -425,7 +477,8 @@
             }
             if (userData.role === 'gestor') {
                 document.querySelectorAll('.role-gerente, .role-gestor').forEach(el => el.style.display = 'block');
-                document.querySelector('#employee-role option[value="gerente"]').style.display = 'block';
+                const gerenteOption = document.querySelector('#employee-role option[value="gerente"]');
+                if (gerenteOption) gerenteOption.style.display = 'block';
             }
         };
 
@@ -438,8 +491,22 @@
             });
         });
 
-        // --- INICIALIZACIÓN ---
-        checkUserSession();
+        // --- INICIALIZACIÓN Y MANEJO DE ESTADO DE AUTENTICACIÓN ---
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'PASSWORD_RECOVERY') {
+                updatePasswordModal.style.display = 'flex';
+                loginView.style.display = 'none';
+                appView.style.display = 'none';
+            } else if (session) {
+                // Si la sesión es válida pero el modal de contraseña está abierto, es un error, lo cerramos.
+                if (updatePasswordModal.style.display === 'flex') {
+                    updatePasswordModal.style.display = 'none';
+                }
+                await initializeApp(session);
+            } else {
+                showLoginView();
+            }
+        });
     </script>
 </body>
 </html>
