@@ -19,6 +19,27 @@
             background-color: #374151; /* gray-700 */
             transform: scale(1.1);
         }
+        /* Estilo para notificaciones */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .notification.show {
+            opacity: 1;
+        }
+        .notification.success {
+            background-color: #10B981; /* green-500 */
+        }
+        .notification.error {
+            background-color: #EF4444; /* red-500 */
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -168,21 +189,22 @@
                             </div>
                         </div>
                     </div>
-
                 </main>
             </div>
         </div>
     </div>
+    
+    <!-- Contenedor para notificaciones -->
+    <div id="notification-container"></div>
 
     <!-- Firebase SDKs -->
     <script type="module">
         // Importa las funciones que necesitas de los SDKs de Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
 
         // --- CONFIGURACIÓN DE FIREBASE ---
-        // Estas son tus claves de configuración reales
         const firebaseConfig = {
           apiKey: "AIzaSyB3oJYaDv2SV0LOY7NSHXFkjWjcJuai8KQ",
           authDomain: "agenda-servicios-trebol.firebaseapp.com",
@@ -211,16 +233,34 @@
         const navLinks = document.querySelectorAll('.sidebar-icon');
         const views = document.querySelectorAll('.view');
         const viewTitle = document.getElementById('view-title');
+        const createEmployeeForm = document.getElementById('create-employee-form');
+        const notificationContainer = document.getElementById('notification-container');
+        
+        // --- FUNCIÓN DE NOTIFICACIONES ---
+        const showNotification = (message, type = 'success') => {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notificationContainer.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10); // Pequeño delay para activar la transición
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 5000); // La notificación desaparece después de 5 segundos
+        };
+
 
         // --- LÓGICA DE AUTENTICACIÓN ---
         
-        // Listener para cambios de estado de autenticación
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Usuario ha iniciado sesión
                 currentUser = user;
-                
-                // Obtenemos el rol del usuario desde Firestore
                 try {
                     const userDocRef = doc(db, "users", user.uid);
                     const userDocSnap = await getDoc(userDocRef);
@@ -228,22 +268,15 @@
                     if (userDocSnap.exists()) {
                         userRole = userDocSnap.data().role || 'empleado';
                     } else {
-                        // Si el documento del usuario no existe, créalo con un rol predeterminado.
-                        // Esto fallará si las reglas de escritura no están configuradas, pero es una buena práctica.
                         console.log("No se encontró el documento del usuario, creando uno nuevo con rol de 'empleado'.");
                         await setDoc(userDocRef, { role: 'empleado' });
                         userRole = 'empleado';
                     }
                 } catch (error) {
                     console.error("Error al obtener el rol del usuario:", error);
-                    console.error("--- POSIBLE SOLUCIÓN ---");
-                    console.error("Este error usualmente significa que las reglas de seguridad de Firestore no permiten la lectura/escritura.");
-                    console.error("Ve a tu consola de Firebase -> Firestore Database -> Reglas y asegúrate de que los usuarios autenticados tengan permiso para leer la colección 'users'.");
-                    console.error("Ejemplo de regla: match /users/{userId} { allow read, write: if request.auth != null && request.auth.uid == userId; }");
-                    loginError.textContent = "Error de permisos al conectar con la base de datos.";
-                    userRole = 'empleado'; // Por defecto al rol con menos privilegios en caso de error
+                    showNotification("Error de permisos al leer datos. Revisa las reglas de Firestore.", "error");
+                    userRole = 'empleado';
                 }
-
 
                 setupUIForUser();
                 showView('dashboard');
@@ -251,7 +284,6 @@
                 appView.style.display = 'block';
 
             } else {
-                // Usuario ha cerrado sesión
                 currentUser = null;
                 userRole = 'empleado';
                 loginView.style.display = 'flex';
@@ -259,7 +291,6 @@
             }
         });
         
-        // Manejador del formulario de login
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = loginForm.email.value;
@@ -273,20 +304,59 @@
                 });
         });
 
-        // Botón de cerrar sesión
         logoutButton.addEventListener('click', (e) => {
             e.preventDefault();
             signOut(auth);
         });
 
+        // --- LÓGICA DE GESTIÓN DE EMPLEADOS ---
+        createEmployeeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const emailInput = createEmployeeForm.querySelector('input');
+            const email = emailInput.value;
+
+            if (!email) {
+                showNotification("Por favor, introduce un correo electrónico.", "error");
+                return;
+            }
+
+            // Usamos un auth secundario para crear el usuario y no desloguear al admin
+            const tempAuth = getAuth(initializeApp(firebaseConfig, 'Secondary'));
+
+            // Generamos una contraseña aleatoria y segura
+            const tempPassword = Math.random().toString(36).substring(2) + 'aA1!';
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(tempAuth, email, tempPassword);
+                const newUser = userCredential.user;
+                
+                // Asignar rol de 'empleado' en Firestore
+                await setDoc(doc(db, "users", newUser.uid), { role: 'empleado' });
+
+                // Enviar correo para restablecer contraseña
+                await sendPasswordResetEmail(auth, email);
+
+                showNotification(`Empleado ${email} creado. Se ha enviado un correo para que establezca su contraseña.`, 'success');
+                emailInput.value = ''; // Limpiar el campo
+
+            } catch (error) {
+                console.error("Error al crear empleado:", error);
+                let errorMessage = "Ocurrió un error al crear el empleado.";
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = "Este correo electrónico ya está en uso.";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "El formato del correo electrónico no es válido.";
+                }
+                showNotification(errorMessage, 'error');
+            }
+        });
+
         // --- LÓGICA DE NAVEGACIÓN Y UI ---
 
-        // Función para mostrar la vista correcta y ocultar las demás
         const showView = (viewId) => {
             views.forEach(view => {
                 if(view.id === `${viewId}-view`) {
                     view.classList.add('active');
-                    // Actualizar título
                     const link = document.querySelector(`a[data-view=${viewId}]`);
                     viewTitle.textContent = link ? link.getAttribute('title') : 'Dashboard';
                 } else {
@@ -295,7 +365,6 @@
             });
         };
 
-        // Event listeners para los enlaces de navegación
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -306,15 +375,11 @@
             });
         });
 
-        // Configura la UI basada en el rol del usuario
         const setupUIForUser = () => {
             document.getElementById('user-name').textContent = currentUser.email;
             document.getElementById('user-role').textContent = `Rol: ${userRole.charAt(0).toUpperCase() + userRole.slice(1)}`;
-
-            // Ocultar elementos por defecto
             document.querySelectorAll('.role-gerente, .role-gestor').forEach(el => el.style.display = 'none');
             
-            // Mostrar elementos según el rol
             if (userRole === 'gerente') {
                 document.querySelectorAll('.role-gerente').forEach(el => el.style.display = 'block');
             }
@@ -323,7 +388,6 @@
             }
         };
 
-        // Inicializar con la vista de dashboard
         showView('dashboard');
         
     </script>
