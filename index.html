@@ -104,25 +104,8 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2hkaWZ1bmJvZWVoZmlzcHVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwNTU2NjMsImV4cCI6MjA3NjYzMTY2M30.kOZGKXOMyhmzbTezNutKhwQ50Cn3uDFulNASax1sQR8';
 
         // --- VALIDACIÓN DE LA CONFIGURACIÓN ---
-        if (SUPABASE_URL === 'https://whwhdifunboeehfispum.supabase.co' || SUPABASE_ANON_KEY === 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2hkaWZ1bmJvZWVoZmlzcHVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwNTU2NjMsImV4cCI6MjA3NjYzMTY2M30.kOZGKXOMyhmzbTezNutKhwQ50Cn3uDFulNASax1sQR8') {
-            document.body.innerHTML = `
-                <div class="flex items-center justify-center h-screen bg-red-100">
-                    <div class="p-8 bg-white rounded-lg shadow-lg text-center max-w-lg">
-                        <h1 class="text-2xl font-bold text-red-600 mb-4">Error de Configuración</h1>
-                        <p class="text-gray-700">
-                            Aún no has configurado tus claves de Supabase en el archivo <code>index.html</code>.
-                        </p>
-                        <p class="mt-4 text-sm text-gray-600">
-                            Por favor, abre el archivo, busca las constantes <code>SUPABASE_URL</code> y <code>SUPABASE_ANON_KEY</code>, y reemplaza los valores de ejemplo con tus claves reales del proyecto de Supabase.
-                        </p>
-                        <p class="mt-2 text-xs text-gray-500">
-                            Puedes encontrar estas claves en la sección 'Project Settings' > 'API' de tu panel de Supabase.
-                        </p>
-                    </div>
-                </div>
-            `;
-            throw new Error("Supabase keys not configured. Please edit index.html");
-        }
+        // Este bloque se elimina ya que la validación incorrecta causaba el error.
+        // El usuario ya ha introducido las claves.
 
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -303,5 +286,4 @@
     </script>
 </body>
 </html>
-
 
