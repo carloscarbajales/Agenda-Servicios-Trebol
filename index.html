@@ -72,7 +72,7 @@
         </div>
     </div>
     
-    <!-- NUEVO: Modal para actualizar la contraseña después de la recuperación -->
+    <!-- Modal para actualizar la contraseña después de la recuperación -->
     <div id="update-password-modal" class="modal">
         <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold text-center">Elige tu Nueva Contraseña</h2>
@@ -197,6 +197,7 @@
         let userData = { role: 'empleado', pharmacy_id: null };
         let centralEmail = null;
         let managedPharmacies = [];
+        let isPasswordRecoveryFlow = false;
 
         // --- ELEMENTOS DEL DOM ---
         const loginView = document.getElementById('login-view');
@@ -432,6 +433,7 @@
             } else {
                 showNotification('Contraseña actualizada con éxito.', 'success');
                 updatePasswordModal.style.display = 'none';
+                isPasswordRecoveryFlow = false; // Restablecer el flag
             }
         });
 
@@ -493,15 +495,22 @@
 
         // --- INICIALIZACIÓN Y MANEJO DE ESTADO DE AUTENTICACIÓN ---
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
+            // Manejar el flujo de recuperación de contraseña como caso especial
             if (event === 'PASSWORD_RECOVERY') {
+                isPasswordRecoveryFlow = true;
                 updatePasswordModal.style.display = 'flex';
                 loginView.style.display = 'none';
                 appView.style.display = 'none';
-            } else if (session) {
-                // Si la sesión es válida pero el modal de contraseña está abierto, es un error, lo cerramos.
-                if (updatePasswordModal.style.display === 'flex') {
-                    updatePasswordModal.style.display = 'none';
-                }
+                return; // Detener para no procesar como una sesión normal
+            }
+
+            // Si estamos en el flujo de recuperación, no hacer nada más hasta que se resuelva
+            if (isPasswordRecoveryFlow) {
+                return;
+            }
+
+            // Flujo normal de inicio/cierre de sesión
+            if (session) {
                 await initializeApp(session);
             } else {
                 showLoginView();
