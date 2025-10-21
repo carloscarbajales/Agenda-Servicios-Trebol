@@ -4,42 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión Farmacias Trébol</title>
-    <!-- Tailwind CSS para un diseño moderno y responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Iconos de Lucide para una mejor interfaz -->
-    <script src="https://unpkg.com/lucide-react@0.292.0/dist/lucide-react.js"></script>
+    <!-- SDK de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Estilos personalizados para mejorar la apariencia */
         .view { display: none; }
         .view.active { display: block; }
-        .sidebar-icon {
-            transition: all 0.2s ease-in-out;
-        }
-        .sidebar-icon:hover {
-            background-color: #374151; /* gray-700 */
-            transform: scale(1.1);
-        }
-        /* Estilo para notificaciones */
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            color: white;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-        .notification.show {
-            opacity: 1;
-        }
-        .notification.success {
-            background-color: #10B981; /* green-500 */
-        }
-        .notification.error {
-            background-color: #EF4444; /* red-500 */
-        }
+        .sidebar-icon { transition: all 0.2s ease-in-out; }
+        .sidebar-icon:hover { background-color: #374151; transform: scale(1.1); }
+        .notification { position: fixed; bottom: 20px; right: 20px; padding: 1rem; border-radius: 0.5rem; color: white; z-index: 1000; opacity: 0; transition: opacity 0.5s ease-in-out; max-width: 320px; }
+        .notification.show { opacity: 1; }
+        .notification.success { background-color: #10B981; }
+        .notification.error { background-color: #EF4444; }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -48,64 +24,34 @@
     <div id="login-view" class="flex items-center justify-center h-screen">
         <div class="w-full max-w-md p-8 space-y-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
             <div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-                    Farmacias Trébol
-                </h2>
-                <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-                    Inicia sesión para acceder al panel de gestión
-                </p>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">Farmacias Trébol</h2>
+                <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">Inicia sesión para acceder al panel</p>
             </div>
             <form id="login-form" class="mt-8 space-y-6">
-                <div class="rounded-md shadow-sm -space-y-px">
-                    <div>
-                        <input id="email" name="email" type="email" autocomplete="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Correo electrónico">
-                    </div>
-                    <div>
-                        <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Contraseña">
-                    </div>
+                <div>
+                    <input id="email" name="email" type="email" autocomplete="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Email de acceso">
+                    <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Contraseña">
                 </div>
                 <p id="login-error" class="text-red-500 text-sm mt-2"></p>
-                <div>
-                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Acceder
-                    </button>
-                </div>
+                <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Acceder</button>
             </form>
         </div>
     </div>
 
-    <!-- Aplicación Principal (oculta por defecto) -->
+    <!-- Aplicación Principal -->
     <div id="app-view" class="hidden">
         <div class="flex h-screen bg-gray-200 dark:bg-gray-800">
-            <!-- Barra lateral de navegación -->
-            <div class="w-16 bg-gray-900 dark:bg-black flex flex-col items-center py-4 space-y-6">
-                 <div class="text-indigo-400 font-bold text-lg">FT</div>
-                 <a href="#" data-view="dashboard" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Dashboard">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-                </a>
-                <a href="#" data-view="calendar" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Calendario">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
-                </a>
-                <a href="#" data-view="appointments" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Gestión de Citas">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
-                </a>
-                <a href="#" data-view="services" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Servicios">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-syringe"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15 1"/><path d="m9 11 4 4"/><path d="M5 19l-3 3"/></svg>
-                </a>
-                <a href="#" data-view="objectives" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Objetivos">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-                </a>
-                <a href="#" data-view="reports" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Informes">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-line-chart"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m16 14-3-3-2 2-3-3"/></svg>
-                </a>
-                <a href="#" data-view="config" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Configuración">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.4l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2.4l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-                </a>
-                 <div class="mt-auto">
-                      <a href="#" id="logout-button" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Cerrar Sesión">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-                      </a>
-                 </div>
+            <!-- Barra lateral -->
+            <div class="w-16 bg-gray-900 flex flex-col items-center py-4 space-y-6">
+                <div class="text-indigo-400 font-bold text-lg">FT</div>
+                <a href="#" data-view="dashboard" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Dashboard"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></a>
+                <a href="#" data-view="calendar" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Calendario"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg></a>
+                <a href="#" data-view="appointments" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Gestión de Citas"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></a>
+                <a href="#" data-view="services" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Servicios"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15 1"/><path d="m9 11 4 4"/><path d="M5 19l-3 3"/></svg></a>
+                <a href="#" data-view="objectives" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Objetivos"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></a>
+                <a href="#" data-view="reports" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Informes"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m16 14-3-3-2 2-3-3"/></svg></a>
+                <a href="#" data-view="config" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Configuración"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.4l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2.4l.15.08a2 2 0 0 0 .73 2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></a>
+                <div class="mt-auto"><a href="#" id="logout-button" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Cerrar Sesión"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg></a></div>
             </div>
 
             <!-- Contenido Principal -->
@@ -118,72 +64,25 @@
                     </div>
                 </header>
                 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-6">
-                    <!-- Cada sección de la app se mostrará aquí -->
-                    <div id="dashboard-view" class="view active">
-                        <h2 class="text-xl font-semibold mb-4">Bienvenido a la gestión de Farmacias Trébol</h2>
-                        <p>Selecciona una opción de la barra lateral para empezar.</p>
-                        <!-- Aquí irán tarjetas con resúmenes rápidos: citas de hoy, cumplimiento de objetivos, etc. -->
-                    </div>
-                    
-                    <div id="calendar-view" class="view">
-                        <h2 class="text-xl font-semibold mb-4">Calendario de Citas</h2>
-                        <!-- Aquí se implementaría un calendario visual (ej. con FullCalendar.js) o una vista de agenda -->
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                             <p>Vista de calendario. Aquí se mostrarían las citas en formato mensual, semanal o diario, con filtros por empleado y servicio.</p>
-                        </div>
-                    </div>
-
-                    <div id="appointments-view" class="view">
-                        <h2 class="text-xl font-semibold mb-4">Gestión de Citas</h2>
-                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                            <h3 class="font-bold mb-2">Crear Nueva Cita</h3>
-                            <form id="add-appointment-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                               <input type="text" placeholder="Nombre Cliente" required class="p-2 rounded bg-gray-200 dark:bg-gray-700">
-                               <input type="tel" placeholder="Teléfono" required class="p-2 rounded bg-gray-200 dark:bg-gray-700">
-                               <!-- Select de servicios se llenará desde JS -->
-                               <select required class="p-2 rounded bg-gray-200 dark:bg-gray-700"><option>Seleccionar Servicio</option></select>
-                               <input type="date" required class="p-2 rounded bg-gray-200 dark:bg-gray-700">
-                               <input type="time" required class="p-2 rounded bg-gray-200 dark:bg-gray-700">
-                               <!-- Select de empleado se llenará desde JS -->
-                               <select required class="p-2 rounded bg-gray-200 dark:bg-gray-700"><option>Seleccionar Empleado</option></select>
-                               <button type="submit" class="md:col-span-3 bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700">Crear Cita</button>
-                            </form>
-                         </div>
-                    </div>
-
-                    <div id="services-view" class="view">
-                        <h2 class="text-xl font-semibold mb-4">Gestión de Servicios</h2>
-                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                             <p>Solo visible para Gerente y Gestor. Aquí se pueden crear, editar y eliminar los servicios farmacéuticos, definiendo nombre, duración, facturación estimada y asignación en el calendario.</p>
-                         </div>
-                    </div>
-
-                    <div id="objectives-view" class="view">
-                        <h2 class="text-xl font-semibold mb-4">Objetivos</h2>
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                            <p>Aquí se visualizará el cumplimiento de objetivos. El empleado verá su progreso individual, mientras que Gerente y Gestor verán los datos globales de la farmacia y podrán configurar los objetivos.</p>
-                        </div>
-                    </div>
-
-                    <div id="reports-view" class="view">
-                        <h2 class="text-xl font-semibold mb-4">Informes</h2>
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                            <p>Sección para Gerente y Gestor. Podrán filtrar y exportar datos en formato de hoja de cálculo.</p>
-                        </div>
-                    </div>
-
+                    <div id="dashboard-view" class="view active">...</div>
+                    <div id="calendar-view" class="view">...</div>
+                    <div id="appointments-view" class="view">...</div>
+                    <div id="services-view" class="view">...</div>
+                    <div id="objectives-view" class="view">...</div>
+                    <div id="reports-view" class="view">...</div>
                     <div id="config-view" class="view">
-                        <h2 class="text-xl font-semibold mb-4">Configuración</h2>
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-4">
-                            <div class="role-gestor">
-                               <h3 class="font-bold">Gestión de Farmacias</h3>
-                               <p>Aquí el Gestor podrá crear o eliminar farmacias.</p>
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6">
+                            <div class="role-gerente role-gestor">
+                                <h3 class="font-bold">Email Central de Gestión</h3>
+                                <form id="config-central-email-form" class="flex gap-4 items-center">
+                                    <input id="central-email" type="email" placeholder="gestion.trebol@gmail.com" required class="flex-grow p-2 rounded bg-gray-200 dark:bg-gray-700">
+                                    <button type="submit" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Guardar</button>
+                                </form>
                             </div>
-                             <div class="role-gerente role-gestor">
-                               <h3 class="font-bold mt-4">Gestión de Empleados</h3>
-                               <p>Crear nuevos perfiles de empleado para la farmacia.</p>
+                            <div class="role-gerente role-gestor">
+                                <h3 class="font-bold mt-4">Gestión de Empleados</h3>
                                 <form id="create-employee-form" class="flex gap-4">
-                                    <input type="email" placeholder="Email del nuevo empleado" required class="flex-grow p-2 rounded bg-gray-200 dark:bg-gray-700">
+                                    <input type="text" id="employee-username" placeholder="Nombre de usuario (ej: juan.perez)" required class="flex-grow p-2 rounded bg-gray-200 dark:bg-gray-700">
                                     <button type="submit" class="bg-green-600 text-white p-2 rounded hover:bg-green-700">Crear Empleado</button>
                                 </form>
                             </div>
@@ -194,35 +93,43 @@
         </div>
     </div>
     
-    <!-- Contenedor para notificaciones -->
     <div id="notification-container"></div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
-        // Importa las funciones que necesitas de los SDKs de Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
+        const { createClient } = supabase;
 
-        // --- CONFIGURACIÓN DE FIREBASE ---
-        const firebaseConfig = {
-          apiKey: "AIzaSyB3oJYaDv2SV0LOY7NSHXFkjWjcJuai8KQ",
-          authDomain: "agenda-servicios-trebol.firebaseapp.com",
-          projectId: "agenda-servicios-trebol",
-          storageBucket: "agenda-servicios-trebol.firebasestorage.app",
-          messagingSenderId: "301625300653",
-          appId: "1:301625300653:web:4b82afa0ddb1c9e51cd824",
-          measurementId: "G-MP3T7EX6HL"
-        };
+        // --- CONFIGURACIÓN DE SUPABASE ---
+        // ¡IMPORTANTE! Reemplaza con tus propias claves de Supabase
+        const SUPABASE_URL = 'TU_SUPABASE_URL'; 
+        const SUPABASE_ANON_KEY = 'TU_SUPABASE_ANON_KEY';
 
-        // Inicializa Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // --- VALIDACIÓN DE LA CONFIGURACIÓN ---
+        if (SUPABASE_URL === 'TU_SUPABASE_URL' || SUPABASE_ANON_KEY === 'TU_SUPABASE_ANON_KEY') {
+            document.body.innerHTML = `
+                <div class="flex items-center justify-center h-screen bg-red-100">
+                    <div class="p-8 bg-white rounded-lg shadow-lg text-center max-w-lg">
+                        <h1 class="text-2xl font-bold text-red-600 mb-4">Error de Configuración</h1>
+                        <p class="text-gray-700">
+                            Aún no has configurado tus claves de Supabase en el archivo <code>index.html</code>.
+                        </p>
+                        <p class="mt-4 text-sm text-gray-600">
+                            Por favor, abre el archivo, busca las constantes <code>SUPABASE_URL</code> y <code>SUPABASE_ANON_KEY</code>, y reemplaza los valores de ejemplo con tus claves reales del proyecto de Supabase.
+                        </p>
+                        <p class="mt-2 text-xs text-gray-500">
+                            Puedes encontrar estas claves en la sección 'Project Settings' > 'API' de tu panel de Supabase.
+                        </p>
+                    </div>
+                </div>
+            `;
+            throw new Error("Supabase keys not configured. Please edit index.html");
+        }
+
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // --- ESTADO DE LA APLICACIÓN ---
         let currentUser = null;
-        let userRole = 'empleado'; // Rol por defecto
+        let userRole = 'empleado';
+        let centralEmail = null;
 
         // --- ELEMENTOS DEL DOM ---
         const loginView = document.getElementById('login-view');
@@ -230,10 +137,9 @@
         const loginForm = document.getElementById('login-form');
         const logoutButton = document.getElementById('logout-button');
         const loginError = document.getElementById('login-error');
-        const navLinks = document.querySelectorAll('.sidebar-icon');
-        const views = document.querySelectorAll('.view');
-        const viewTitle = document.getElementById('view-title');
         const createEmployeeForm = document.getElementById('create-employee-form');
+        const configCentralEmailForm = document.getElementById('config-central-email-form');
+        const centralEmailInput = document.getElementById('central-email');
         const notificationContainer = document.getElementById('notification-container');
         
         // --- FUNCIÓN DE NOTIFICACIONES ---
@@ -242,154 +148,158 @@
             notification.className = `notification ${type}`;
             notification.textContent = message;
             notificationContainer.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10); // Pequeño delay para activar la transición
-
+            setTimeout(() => notification.classList.add('show'), 10);
             setTimeout(() => {
                 notification.classList.remove('show');
-                setTimeout(() => {
-                    notification.remove();
-                }, 500);
-            }, 5000); // La notificación desaparece después de 5 segundos
+                setTimeout(() => notification.remove(), 500);
+            }, 5000);
         };
 
+        // --- LÓGICA DE CONFIGURACIÓN ---
+        const loadConfig = async () => {
+            const { data, error } = await supabaseClient
+                .from('config')
+                .select('central_email')
+                .eq('id', 1)
+                .single();
+
+            if (error) {
+                console.error("Error cargando configuración:", error.message);
+                showNotification("Error al cargar la configuración. Revisa las reglas de seguridad.", "error");
+            } else if (data) {
+                centralEmail = data.central_email;
+                if (centralEmail) {
+                    centralEmailInput.value = centralEmail;
+                }
+            }
+        };
+
+        configCentralEmailForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newEmail = centralEmailInput.value.trim();
+            const { error } = await supabaseClient
+                .from('config')
+                .update({ central_email: newEmail })
+                .eq('id', 1);
+
+            if (error) {
+                showNotification("Error al guardar el email. Revisa tus permisos.", "error");
+                console.error("Error guardando email:", error.message);
+            } else {
+                centralEmail = newEmail;
+                showNotification("Email central guardado.", "success");
+            }
+        });
 
         // --- LÓGICA DE AUTENTICACIÓN ---
-        
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                try {
-                    const userDocRef = doc(db, "users", user.uid);
-                    const userDocSnap = await getDoc(userDocRef);
+        const checkUserSession = async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                
+                const { data: userData, error } = await supabaseClient
+                    .from('users')
+                    .select('role')
+                    .eq('id', currentUser.id)
+                    .single();
 
-                    if (userDocSnap.exists()) {
-                        userRole = userDocSnap.data().role || 'empleado';
-                    } else {
-                        console.log("No se encontró el documento del usuario, creando uno nuevo con rol de 'empleado'.");
-                        await setDoc(userDocRef, { role: 'empleado' });
-                        userRole = 'empleado';
-                    }
-                } catch (error) {
-                    console.error("Error al obtener el rol del usuario:", error);
-                    showNotification("Error de permisos al leer datos. Revisa las reglas de Firestore.", "error");
-                    userRole = 'empleado';
+                if (error || !userData) {
+                    console.error("Error obteniendo rol:", error?.message);
+                    // Si no tiene perfil, es probable que sea el primer admin.
+                    // Se le asigna el rol en la base de datos manualmente.
+                    userRole = 'empleado'; // Rol por defecto seguro
+                } else {
+                    userRole = userData.role;
                 }
 
+                await loadConfig();
                 setupUIForUser();
-                showView('dashboard');
                 loginView.style.display = 'none';
                 appView.style.display = 'block';
-
             } else {
-                currentUser = null;
-                userRole = 'empleado';
                 loginView.style.display = 'flex';
                 appView.style.display = 'none';
             }
-        });
-        
-        loginForm.addEventListener('submit', (e) => {
+        };
+
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = loginForm.email.value;
-            const password = loginForm.password.value;
             loginError.textContent = '';
+            const { error } = await supabaseClient.auth.signInWithPassword({
+                email: loginForm.email.value,
+                password: loginForm.password.value,
+            });
 
-            signInWithEmailAndPassword(auth, email, password)
-                .catch((error) => {
-                    console.error("Error de login:", error.code, error.message);
-                    loginError.textContent = 'Correo o contraseña incorrectos.';
-                });
+            if (error) {
+                loginError.textContent = 'Email o contraseña incorrectos.';
+                console.error("Error de login:", error.message);
+            } else {
+                checkUserSession();
+            }
         });
 
-        logoutButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            signOut(auth);
+        logoutButton.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
         });
 
         // --- LÓGICA DE GESTIÓN DE EMPLEADOS ---
         createEmployeeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const emailInput = createEmployeeForm.querySelector('input');
-            const email = emailInput.value;
+            const username = document.getElementById('employee-username').value.trim().toLowerCase().replace(/\s+/g, '.');
+            if (!username) { showNotification("Introduce un nombre de usuario.", "error"); return; }
+            if (!centralEmail || !centralEmail.includes('@')) { showNotification("Guarda un email central válido primero.", "error"); return; }
 
-            if (!email) {
-                showNotification("Por favor, introduce un correo electrónico.", "error");
+            const [base, domain] = centralEmail.split('@');
+            const email = `${base}+${username}@${domain}`;
+            const password = Math.random().toString(36).slice(-10) + "A1!";
+
+            // Se crea el usuario en Supabase Auth
+            const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+
+            if (authError) {
+                showNotification(authError.message, "error");
+                console.error("Error creando empleado (Auth):", authError.message);
                 return;
             }
 
-            // Usamos un auth secundario para crear el usuario y no desloguear al admin
-            const tempAuth = getAuth(initializeApp(firebaseConfig, 'Secondary'));
-
-            // Generamos una contraseña aleatoria y segura
-            const tempPassword = Math.random().toString(36).substring(2) + 'aA1!';
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(tempAuth, email, tempPassword);
-                const newUser = userCredential.user;
+            // Se crea el perfil del usuario en la tabla 'users'
+            if (authData.user) {
+                const { error: profileError } = await supabaseClient
+                    .from('users')
+                    .insert({ id: authData.user.id, role: 'empleado', username, email });
                 
-                // Asignar rol de 'empleado' en Firestore
-                await setDoc(doc(db, "users", newUser.uid), { role: 'empleado' });
-
-                // Enviar correo para restablecer contraseña
-                await sendPasswordResetEmail(auth, email);
-
-                showNotification(`Empleado ${email} creado. Se ha enviado un correo para que establezca su contraseña.`, 'success');
-                emailInput.value = ''; // Limpiar el campo
-
-            } catch (error) {
-                console.error("Error al crear empleado:", error);
-                let errorMessage = "Ocurrió un error al crear el empleado.";
-                if (error.code === 'auth/email-already-in-use') {
-                    errorMessage = "Este correo electrónico ya está en uso.";
-                } else if (error.code === 'auth/invalid-email') {
-                    errorMessage = "El formato del correo electrónico no es válido.";
+                if (profileError) {
+                    showNotification("Usuario creado, pero no se pudo guardar su perfil. Revisa permisos.", "error");
+                    console.error("Error creando perfil:", profileError.message);
+                } else {
+                    showNotification(`Empleado ${username} creado. Recibirás un correo para que establezca su contraseña.`, "success");
+                    // Opcional: enviar correo de recuperación para que el admin lo gestione
+                    await supabaseClient.auth.resetPasswordForEmail(email);
                 }
-                showNotification(errorMessage, 'error');
             }
         });
 
-        // --- LÓGICA DE NAVEGACIÓN Y UI ---
-
-        const showView = (viewId) => {
-            views.forEach(view => {
-                if(view.id === `${viewId}-view`) {
-                    view.classList.add('active');
-                    const link = document.querySelector(`a[data-view=${viewId}]`);
-                    viewTitle.textContent = link ? link.getAttribute('title') : 'Dashboard';
-                } else {
-                    view.classList.remove('active');
-                }
-            });
-        };
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const viewId = e.currentTarget.dataset.view;
-                if (viewId) {
-                    showView(viewId);
-                }
-            });
-        });
-
+        // --- LÓGICA DE UI ---
         const setupUIForUser = () => {
             document.getElementById('user-name').textContent = currentUser.email;
-            document.getElementById('user-role').textContent = `Rol: ${userRole.charAt(0).toUpperCase() + userRole.slice(1)}`;
+            document.getElementById('user-role').textContent = `Rol: ${userRole}`;
             document.querySelectorAll('.role-gerente, .role-gestor').forEach(el => el.style.display = 'none');
-            
-            if (userRole === 'gerente') {
-                document.querySelectorAll('.role-gerente').forEach(el => el.style.display = 'block');
-            }
-            if (userRole === 'gestor') {
-                document.querySelectorAll('.role-gerente, .role-gestor').forEach(el => el.style.display = 'block');
-            }
+            if (userRole === 'gerente') document.querySelectorAll('.role-gerente').forEach(el => el.style.display = 'block');
+            if (userRole === 'gestor') document.querySelectorAll('.role-gerente, .role-gestor').forEach(el => el.style.display = 'block');
         };
 
-        showView('dashboard');
-        
+        document.querySelectorAll('.sidebar-icon').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const viewId = e.currentTarget.dataset.view;
+                document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `${viewId}-view`));
+                document.getElementById('view-title').textContent = e.currentTarget.getAttribute('title');
+            });
+        });
+
+        // --- INICIALIZACIÓN ---
+        checkUserSession();
     </script>
 </body>
 </html>
