@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión Farmacias Trébol</title>
+    <!-- Tailwind CSS para un diseño moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos de Lucide para una mejor interfaz -->
+    <script src="https://unpkg.com/lucide-react@0.292.0/dist/lucide-react.js"></script>
+    <style>
+        /* Estilos personalizados para mejorar la apariencia */
+        .view { display: none; }
+        .view.active { display: block; }
+        .sidebar-icon {
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-icon:hover {
+            background-color: #374151; /* gray-700 */
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+    <!-- Pantalla de Login -->
+    <div id="login-view" class="flex items-center justify-center h-screen">
+        <div class="w-full max-w-md p-8 space-y-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+                    Farmacias Trébol
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+                    Inicia sesión para acceder al panel de gestión
+                </p>
+            </div>
+            <form id="login-form" class="mt-8 space-y-6">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <input id="email" name="email" type="email" autocomplete="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Correo electrónico">
+                    </div>
+                    <div>
+                        <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Contraseña">
+                    </div>
+                </div>
+                <p id="login-error" class="text-red-500 text-sm mt-2"></p>
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Acceder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aplicación Principal (oculta por defecto) -->
+    <div id="app-view" class="hidden">
+        <div class="flex h-screen bg-gray-200 dark:bg-gray-800">
+            <!-- Barra lateral de navegación -->
+            <div class="w-16 bg-gray-900 dark:bg-black flex flex-col items-center py-4 space-y-6">
+                 <div class="text-indigo-400 font-bold text-lg">FT</div>
+                 <a href="#" data-view="dashboard" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                </a>
+                <a href="#" data-view="calendar" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Calendario">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+                </a>
+                <a href="#" data-view="appointments" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Gestión de Citas">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+                </a>
+                <a href="#" data-view="services" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Servicios">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-syringe"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15 1"/><path d="m9 11 4 4"/><path d="M5 19l-3 3"/></svg>
+                </a>
+                <a href="#" data-view="objectives" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Objetivos">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                </a>
+                <a href="#" data-view="reports" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Informes">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-line-chart"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m16 14-3-3-2 2-3-3"/></svg>
+                </a>
+                <a href="#" data-view="config" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Configuración">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.4l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2.4l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                </a>
+                 <div class="mt-auto">
+                      <a href="#" id="logout-button" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Cerrar Sesión">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                      </a>
+                 </div>
+            </div>
+
+            <!-- Contenido Principal -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <header class="flex justify-between items-center p-4 bg-white dark:bg-gray-800 shadow">
+                    <h1 id="view-title" class="text-2xl font-bold">Dashboard</h1>
+                    <div id="user-info" class="text-right">
+                        <p class="font-semibold" id="user-name"></p>
+                        <p class="text-sm text-gray-500" id="user-role"></p>
+                    </div>
+                </header>
+                <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-6">
+                    <!-- Cada sección de la app se mostrará aquí -->
+                    <div id="dashboard-view" class="view active">
+                        <h2 class="text-xl font-semibold mb-4">Bienvenido a la gestión de Farmacias Trébol</h2>
+                        <p>Selecciona una opción de la barra lateral para empezar.</p>
+                        <!-- Aquí irán tarjetas con resúmenes rápidos: citas de hoy, cumplimiento de objetivos, etc. -->
+                    </div>
+                    
+                    <div id="calendar-view" class="view">
+                        <h2 class="text-xl font-semibold mb-4">Calendario de Citas</h2>
+                        <!-- Aquí se implementaría un calendario visual (ej. con FullCalendar.js) o una vista de agenda -->
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                             <p>Vista de calendario. Aquí se mostrarían las citas en formato mensual, semanal o diario, con filtros por empleado y servicio.</p>
+                        </div>
+                    </div>
+
+                    <div id="appointments-view" class="view">
+                        <h2 class="text-xl font-semibold mb-4">Gestión de Citas</h2>
+                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                            <h3 class="font-bold mb-2">Crear Nueva Cita</h3>
+                            <form id="add-appointment-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                               <input type="text" placeholder="Nombre Cliente" required class="p-2 rounded bg-gray-200 dark:bg-gray-700">
+                               <input type="tel" placeholder="Teléfono" required class="p-2 rounded bg-gray-200 dark:bg-gray-700">
+                               <!-- Select de servicios se llenará desde JS -->
+                               <select required class="p-2 rounded bg-gray-200 dark:bg-gray-700"><option>Seleccionar Servicio</option></select>
+                               <input type="date" required class="p-2 rounded bg-gray-200 dark:bg-gray-700">
+                               <input type="time" required class="p-2 rounded bg-gray-200 dark:bg-gray-700">
+                               <!-- Select de empleado se llenará desde JS -->
+                               <select required class="p-2 rounded bg-gray-200 dark:bg-gray-700"><option>Seleccionar Empleado</option></select>
+                               <button type="submit" class="md:col-span-3 bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700">Crear Cita</button>
+                            </form>
+                         </div>
+                    </div>
+
+                    <div id="services-view" class="view">
+                        <h2 class="text-xl font-semibold mb-4">Gestión de Servicios</h2>
+                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                             <p>Solo visible para Gerente y Gestor. Aquí se pueden crear, editar y eliminar los servicios farmacéuticos, definiendo nombre, duración, facturación estimada y asignación en el calendario.</p>
+                         </div>
+                    </div>
+
+                    <div id="objectives-view" class="view">
+                        <h2 class="text-xl font-semibold mb-4">Objetivos</h2>
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                            <p>Aquí se visualizará el cumplimiento de objetivos. El empleado verá su progreso individual, mientras que Gerente y Gestor verán los datos globales de la farmacia y podrán configurar los objetivos.</p>
+                        </div>
+                    </div>
+
+                    <div id="reports-view" class="view">
+                        <h2 class="text-xl font-semibold mb-4">Informes</h2>
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                            <p>Sección para Gerente y Gestor. Podrán filtrar y exportar datos en formato de hoja de cálculo.</p>
+                        </div>
+                    </div>
+
+                    <div id="config-view" class="view">
+                        <h2 class="text-xl font-semibold mb-4">Configuración</h2>
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-4">
+                            <div class="role-gestor">
+                               <h3 class="font-bold">Gestión de Farmacias</h3>
+                               <p>Aquí el Gestor podrá crear o eliminar farmacias.</p>
+                            </div>
+                             <div class="role-gerente role-gestor">
+                               <h3 class="font-bold mt-4">Gestión de Empleados</h3>
+                               <p>Crear nuevos perfiles de empleado para la farmacia.</p>
+                                <form id="create-employee-form" class="flex gap-4">
+                                    <input type="email" placeholder="Email del nuevo empleado" required class="flex-grow p-2 rounded bg-gray-200 dark:bg-gray-700">
+                                    <button type="submit" class="bg-green-600 text-white p-2 rounded hover:bg-green-700">Crear Empleado</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Importa las funciones que necesitas de los SDKs de Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
+
+        // --- CONFIGURACIÓN DE FIREBASE ---
+        // IMPORTANTE: Reemplaza este objeto con la configuración de tu propio proyecto de Firebase
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_AUTH_DOMAIN",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_STORAGE_BUCKET",
+            messagingSenderId: "TU_MESSAGING_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- ESTADO DE LA APLICACIÓN ---
+        let currentUser = null;
+        let userRole = 'empleado'; // Rol por defecto
+
+        // --- ELEMENTOS DEL DOM ---
+        const loginView = document.getElementById('login-view');
+        const appView = document.getElementById('app-view');
+        const loginForm = document.getElementById('login-form');
+        const logoutButton = document.getElementById('logout-button');
+        const loginError = document.getElementById('login-error');
+        const navLinks = document.querySelectorAll('.sidebar-icon');
+        const views = document.querySelectorAll('.view');
+        const viewTitle = document.getElementById('view-title');
+
+        // --- LÓGICA DE AUTENTICACIÓN ---
+        
+        // Listener para cambios de estado de autenticación
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Usuario ha iniciado sesión
+                currentUser = user;
+                
+                // Obtenemos el rol del usuario desde Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    userRole = userDocSnap.data().role || 'empleado';
+                } else {
+                    // Si no existe el documento, asignamos rol por defecto.
+                    // En un sistema real, esto debería manejarse con más seguridad.
+                    console.log("No se encontró el rol para el usuario, se asigna 'empleado'.");
+                    userRole = 'empleado';
+                }
+
+                setupUIForUser();
+                showView('dashboard');
+                loginView.style.display = 'none';
+                appView.style.display = 'block';
+
+            } else {
+                // Usuario ha cerrado sesión
+                currentUser = null;
+                userRole = 'empleado';
+                loginView.style.display = 'flex';
+                appView.style.display = 'none';
+            }
+        });
+        
+        // Manejador del formulario de login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            loginError.textContent = '';
+
+            signInWithEmailAndPassword(auth, email, password)
+                .catch((error) => {
+                    console.error("Error de login:", error.message);
+                    loginError.textContent = 'Correo o contraseña incorrectos.';
+                });
+        });
+
+        // Botón de cerrar sesión
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth);
+        });
+
+        // --- LÓGICA DE NAVEGACIÓN Y UI ---
+
+        // Función para mostrar la vista correcta y ocultar las demás
+        const showView = (viewId) => {
+            views.forEach(view => {
+                if(view.id === `${viewId}-view`) {
+                    view.classList.add('active');
+                    // Actualizar título
+                    const link = document.querySelector(`a[data-view=${viewId}]`);
+                    viewTitle.textContent = link ? link.getAttribute('title') : 'Dashboard';
+                } else {
+                    view.classList.remove('active');
+                }
+            });
+        };
+
+        // Event listeners para los enlaces de navegación
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const viewId = e.currentTarget.dataset.view;
+                if (viewId) {
+                    showView(viewId);
+                }
+            });
+        });
+
+        // Configura la UI basada en el rol del usuario
+        const setupUIForUser = () => {
+            document.getElementById('user-name').textContent = currentUser.email;
+            document.getElementById('user-role').textContent = `Rol: ${userRole.charAt(0).toUpperCase() + userRole.slice(1)}`;
+
+            // Ocultar elementos por defecto
+            document.querySelectorAll('.role-gerente, .role-gestor').forEach(el => el.style.display = 'none');
+            
+            // Mostrar elementos según el rol
+            if (userRole === 'gerente') {
+                document.querySelectorAll('.role-gerente').forEach(el => el.style.display = 'block');
+            }
+            if (userRole === 'gestor') {
+                document.querySelectorAll('.role-gerente, .role-gestor').forEach(el => el.style.display = 'block');
+            }
+        };
+
+        // Inicializar con la vista de dashboard
+        showView('dashboard');
+        
+    </script>
+</body>
+</html>
