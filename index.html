@@ -127,7 +127,52 @@
                     <div id="dashboard-view" class="view active">...</div>
                     <div id="calendar-view" class="view">...</div>
                     <div id="appointments-view" class="view">...</div>
-                    <div id="services-view" class="view">...</div>
+                    
+                    <!-- Vista de Servicios -->
+                    <div id="services-view" class="view">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Columna Formulario -->
+                            <div class="md:col-span-1 bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                                <h3 class="text-xl font-bold mb-4">Añadir Nuevo Servicio</h3>
+                                <form id="create-service-form" class="space-y-4">
+                                    <div>
+                                        <label for="service-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del Servicio</label>
+                                        <input type="text" id="service-name" required class="mt-1 w-full p-2 rounded bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                                    </div>
+                                    <div>
+                                        <label for="service-duration" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Duración (minutos)</label>
+                                        <input type="number" id="service-duration" required min="5" value="30" class="mt-1 w-full p-2 rounded bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                                    </div>
+                                    <div>
+                                        <label for="service-billing" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Facturación Estimada (€)</label>
+                                        <input type="number" id="service-billing" step="0.01" min="0" value="0.00" class="mt-1 w-full p-2 rounded bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                                    </div>
+                                    <button type="submit" class="w-full bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700">Crear Servicio</button>
+                                </form>
+                            </div>
+                            <!-- Columna Lista Servicios -->
+                            <div class="md:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                                <h3 class="text-xl font-bold mb-4">Servicios Existentes</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead class="bg-gray-50 dark:bg-gray-700">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nombre</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Duración</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fact. Estimada</th>
+                                                <th scope="col" class="relative px-6 py-3"><span class="sr-only">Acciones</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="services-list" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                            <!-- Filas generadas por JS -->
+                                            <tr><td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Cargando servicios...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="objectives-view" class="view">...</div>
                     <div id="reports-view" class="view">...</div>
                     
@@ -238,6 +283,7 @@
         let userData = { role: 'empleado', pharmacy_id: null };
         let centralEmail = null;
         let managedPharmacies = [];
+        let servicesData = []; // Para guardar los servicios cargados
 
         // --- ELEMENTOS DEL DOM ---
         const loginView = document.getElementById('login-view');
@@ -258,6 +304,8 @@
         const updatePasswordForm = document.getElementById('update-password-form');
         const changePasswordForm = document.getElementById('change-password-form');
         const userDisplayName = document.getElementById('user-display-name'); 
+        const createServiceForm = document.getElementById('create-service-form');
+        const servicesListBody = document.getElementById('services-list');
         
         // --- FUNCIÓN DE NOTIFICACIONES ---
         const showNotification = (message, type = 'success') => {
@@ -285,6 +333,115 @@
             updatePasswordModal.style.display = 'none';
             loginView.style.display = 'flex';
         };
+
+        // --- LÓGICA DE GESTIÓN DE SERVICIOS ---
+        const loadServices = async () => {
+            // **AÑADIDO:** Log para depurar
+            console.log("Attempting to load services...");
+            if (!servicesListBody) {
+                 console.warn("Services list body not found in DOM.");
+                 return; 
+            }
+            servicesListBody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Cargando servicios...</td></tr>';
+            try {
+                const { data, error, status } = await supabaseClient
+                    .from('services')
+                    .select('*')
+                    .order('name', { ascending: true }); // Ordenar alfabéticamente
+                
+                // **AÑADIDO:** Log detallado del resultado
+                console.log("Load services result - Status:", status, "Data:", data, "Error:", error);
+
+                if (error) throw error;
+                servicesData = data; // Guardar los datos cargados
+
+                if (servicesData.length === 0) {
+                    servicesListBody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No hay servicios creados todavía.</td></tr>';
+                    return;
+                }
+
+                servicesListBody.innerHTML = servicesData.map(service => `
+                    <tr id="service-row-${service.id}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">${service.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${service.duration_minutes} min</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${service.estimated_billing} €</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button data-id="${service.id}" class="text-indigo-600 hover:text-indigo-900 mr-2 edit-service-btn">Editar</button>
+                            <button data-id="${service.id}" class="text-red-600 hover:text-red-900 delete-service-btn">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                // Añadir listeners para botones (se implementará la lógica después)
+                servicesListBody.querySelectorAll('.edit-service-btn').forEach(btn => btn.addEventListener('click', handleEditService));
+                servicesListBody.querySelectorAll('.delete-service-btn').forEach(btn => btn.addEventListener('click', handleDeleteService));
+
+            } catch (error) {
+                console.error("Error cargando servicios:", error.message);
+                servicesListBody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-red-500 text-center">Error al cargar los servicios.</td></tr>';
+                if (error.message.includes('permission denied')) {
+                     showNotification("Error de permisos al cargar servicios. Revisa las reglas SQL.", "error");
+                } else if (error.message.includes("relation \"public.services\" does not exist")) { // **AÑADIDO:** Error específico si la tabla no existe
+                     showNotification("Error: La tabla 'services' no existe. Ejecuta el script SQL para crearla.", "error");
+                }
+            }
+        };
+
+        if (createServiceForm) {
+            createServiceForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('service-name').value.trim();
+                const duration_minutes = parseInt(document.getElementById('service-duration').value);
+                const estimated_billing = parseFloat(document.getElementById('service-billing').value);
+
+                if (!name || isNaN(duration_minutes) || duration_minutes <= 0 || isNaN(estimated_billing) || estimated_billing < 0) {
+                    return showNotification("Por favor, introduce datos válidos para el servicio.", "error");
+                }
+
+                const { error } = await supabaseClient
+                    .from('services')
+                    .insert({ name, duration_minutes, estimated_billing });
+
+                if (error) {
+                    console.error("Error creando servicio:", error);
+                     if (error.code === '23505') { // Error de violación de unicidad (nombre duplicado)
+                         showNotification("Ya existe un servicio con ese nombre.", "error");
+                     } else if (error.message.includes('permission denied')) {
+                         showNotification("No tienes permisos para crear servicios.", "error");
+                     } else {
+                        showNotification("Error al crear el servicio.", "error");
+                     }
+                } else {
+                    showNotification("Servicio creado con éxito.", "success");
+                    createServiceForm.reset();
+                    await loadServices(); // Recargar la lista
+                }
+            });
+        }
+        
+        // Funciones placeholder para editar/eliminar (se implementarán después)
+        const handleEditService = (e) => {
+             const serviceId = e.target.dataset.id;
+             console.log("Editar servicio ID:", serviceId);
+             showNotification("Funcionalidad de editar pendiente de implementación.", "error");
+             // Aquí abriríamos un modal o rellenaríamos el form con los datos del servicio serviceData.find(s => s.id == serviceId)
+        };
+        
+         const handleDeleteService = async (e) => {
+             const serviceId = e.target.dataset.id;
+             const service = servicesData.find(s => s.id == serviceId);
+             if (!service) return;
+
+             // Usar un modal de confirmación en lugar de confirm()
+             showNotification(`Funcionalidad de eliminar ${service.name} pendiente. ID: ${serviceId}`, "error");
+             console.log("Eliminar servicio ID:", serviceId);
+             
+             // Lógica de borrado (cuando se implemente el modal):
+             // const { error } = await supabaseClient.from('services').delete().eq('id', serviceId);
+             // if (error) { showNotification("Error al eliminar", "error"); } 
+             // else { showNotification("Eliminado", "success"); await loadServices(); }
+        };
+
 
         // --- LÓGICA DE GESTIÓN DE EQUIPO ---
         const loadUsers = async (pharmacyId = null) => {
@@ -344,6 +501,7 @@
         // --- LÓGICA DE GESTIÓN DE FARMACIAS ---
         const loadPharmacies = async () => {
              if (userData.role === 'empleado') return; // Empleado no necesita cargar farmacias
+            console.log("Attempting to load pharmacies..."); // **AÑADIDO:** Log
             try {
                 let query = supabaseClient.from('pharmacies').select('*');
                 // Si eres gerente, solo cargar tu farmacia
@@ -351,19 +509,38 @@
                      query = query.eq('id', userData.pharmacy_id);
                  }
                  
-                const { data, error } = await query;
+                const { data, error, status } = await query;
+                 // **AÑADIDO:** Log detallado
+                 console.log("Load pharmacies result - Status:", status, "Data:", data, "Error:", error);
                 if (error) throw error;
                 managedPharmacies = data || []; // Asegurar que sea un array
                 
                 const pharmaciesList = document.getElementById('pharmacies-list');
-                if (pharmaciesList) pharmaciesList.innerHTML = managedPharmacies.map(p => `<li class="p-2 bg-gray-100 dark:bg-gray-700 rounded">${p.name}</li>`).join('');
+                // **AÑADIDO:** Verificar si el elemento existe antes de manipularlo
+                if (pharmaciesList) {
+                    pharmaciesList.innerHTML = managedPharmacies.map(p => `<li class="p-2 bg-gray-100 dark:bg-gray-700 rounded">${p.name}</li>`).join('');
+                } else {
+                     console.warn("Element #pharmacies-list not found in DOM.");
+                }
                 
                 const employeePharmacySelect = document.getElementById('employee-pharmacy');
+                 if (!employeePharmacySelect) {
+                      console.warn("Element #employee-pharmacy not found.");
+                      return; // Salir si el select no existe
+                 }
                 employeePharmacySelect.innerHTML = '<option value="">Seleccionar farmacia...</option>';
-                pharmacyFilter.innerHTML = '<option value="all">Todas las farmacias</option>';
+                
+                 if (!pharmacyFilter) {
+                     console.warn("Element #pharmacy-filter not found.");
+                     // No es crítico si no existe, solo afecta al filtro
+                 } else {
+                    pharmacyFilter.innerHTML = '<option value="all">Todas las farmacias</option>';
+                     if (userData.role === 'administrador') {
+                        pharmacyFilter.innerHTML += '<option value="null">Gestores sin asignar</option>';
+                     }
+                 }
                  
                 if (userData.role === 'administrador') {
-                    pharmacyFilter.innerHTML += '<option value="null">Gestores sin asignar</option>';
                      employeePharmacySelect.innerHTML += '<option value="null" class="role-administrador">Sin asignar (para Gestores/Admin)</option>'; // Añadirlo también al form
                 }
                 
@@ -377,7 +554,7 @@
                     option.value = p.id;
                     option.textContent = p.name;
                     employeePharmacySelect.appendChild(option.cloneNode(true));
-                    if (userData.role === 'administrador' || userData.role === 'gestor') {
+                    if (pharmacyFilter && (userData.role === 'administrador' || userData.role === 'gestor')) {
                         pharmacyFilter.appendChild(option);
                     }
                 });
@@ -387,8 +564,12 @@
             } catch (error) {
                  console.error("Error cargando farmacias:", error.message);
                  showNotification("No se pudieron cargar las farmacias.", "error");
+                 if (error.message.includes('permission denied')) {
+                     showNotification("Error de permisos al cargar farmacias. Revisa las reglas SQL.", "error");
+                 }
             }
         };
+
 
         if (createPharmacyForm) {
             createPharmacyForm.addEventListener('submit', async (e) => {
@@ -461,6 +642,10 @@
                  if (['administrador', 'gestor', 'gerente'].includes(userData.role)) {
                      await loadUsers(pharmacyFilter ? pharmacyFilter.value : null); 
                  }
+                 // Cargar servicios si el rol tiene acceso a la pestaña
+                  if (['administrador', 'gestor', 'gerente', 'empleado'].includes(userData.role)) { // Empleado también los necesita para citas
+                     await loadServices();
+                  }
                 
                 showAppView(); // Mostrar la app principal
 
@@ -485,22 +670,20 @@
             const password = document.getElementById('password').value;
             let email = identifier;
 
-            // **CORRECCIÓN:** Convertir a minúsculas ANTES de buscar
             const usernameToSearch = identifier.toLowerCase(); 
 
             if (!identifier.includes('@')) {
-                console.log(`Attempting to find email for username: ${usernameToSearch}`); // Usar la versión en minúsculas
+                console.log(`Attempting to find email for username: ${usernameToSearch}`); 
                 try {
                     const { data, error } = await supabaseClient
                         .from('users')
                         .select('email')
-                        .eq('username', usernameToSearch) // Buscar con minúsculas
+                        .eq('username', usernameToSearch) 
                         .maybeSingle(); 
 
                     console.log("Username lookup result - Data:", data, "Error:", error);
 
-                    if (error && error.code !== 'PGRST116') { // Ignorar PGROST116 (0 resultados) pero no otros errores
-                        // Loggear el error real para depuración
+                    if (error && error.code !== 'PGRST116') { 
                         console.error("Database error during username lookup:", error);
                         throw new Error('Error al conectar con la base de datos'); 
                     }
@@ -512,11 +695,10 @@
                     email = data.email;
                      console.log(`Email found for username ${usernameToSearch}: ${email}`); 
                 } catch (userError) {
-                    // Mostrar el mensaje de error específico si es "Usuario no encontrado"
                     if (userError.message === 'Usuario no encontrado') {
                         loginError.textContent = 'Nombre de usuario no encontrado.';
                     } else {
-                        loginError.textContent = 'Error al buscar usuario.'; // Error genérico para otros problemas
+                        loginError.textContent = 'Error al buscar usuario.'; 
                     }
                     console.error("Error finding user by username:", userError.message);
                     return; 
@@ -615,15 +797,16 @@
                 const username = document.getElementById('employee-username').value.trim().toLowerCase().replace(/\s+/g, '.');
                 const role = document.getElementById('employee-role').value;
                 let pharmacy_id = document.getElementById('employee-pharmacy').value;
-                 if (pharmacy_id === 'null' || (role === 'gestor' && pharmacy_id === '')) { 
+                 if (pharmacy_id === 'null' || (role === 'gestor' && pharmacy_id === '') || (role === 'administrador' && pharmacy_id === '')) { // Admin/Gestor pueden no tener farmacia
                      pharmacy_id = null; 
-                 } else if (!pharmacy_id && role !== 'gestor' && role !== 'administrador') { // Admin también podría no tener farmacia
+                 } else if (!pharmacy_id && !['administrador', 'gestor'].includes(role)) { // Empleado/Gerente requieren farmacia
                      return showNotification("Debes seleccionar una farmacia para este rol.", "error");
                  } else if (pharmacy_id) {
                      pharmacy_id = parseInt(pharmacy_id); 
                  } else {
                       pharmacy_id = null; // Asegurar que sea null si está vacío para admin/gestor
                  }
+
 
                 if (!username || !role) return showNotification("Nombre de usuario y rol son obligatorios.", "error");
                 if (!centralEmail) return showNotification("Guarda un email central válido primero.", "error"); 
@@ -632,24 +815,37 @@
                 const email = `${base}+${username}@${domain}`;
                 const password = Math.random().toString(36).slice(-10) + "A1!";
                 
+                // Crear el usuario en Auth
                 const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
                 
-                if (authError) return showNotification(authError.message, "error");
+                if (authError) {
+                    if (authError.message.includes('User already registered')) {
+                         return showNotification('Este nombre de usuario ya está en uso (email generado ya existe).', 'error');
+                    }
+                    return showNotification(authError.message, "error");
+                }
                 
+                // Si la creación en Auth fue exitosa, insertar en 'users'
                 if (authData.user) {
                     const { error: profileError } = await supabaseClient.from('users').insert({ id: authData.user.id, role, username, email, pharmacy_id });
                     if (profileError) { 
-                        showNotification("Usuario creado, pero no se guardó el perfil.", "error"); 
+                        showNotification("Usuario creado en Auth, pero no se guardó el perfil. Contacta al admin.", "error"); 
                         console.error("Profile insert error:", profileError);
+                        // Idealmente, aquí se debería intentar borrar el usuario de Auth para consistencia, pero requiere permisos de admin
                     } else {
                         showNotification(`Usuario ${username} (${role}) creado.`, "success");
+                         // Enviar email de reset solo si no es admin (asumimos que el admin ya sabe su pass)
                          if (role !== 'administrador') {
                             await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split('#')[0] });
                          }
                         createEmployeeForm.reset();
+                        // Resetear la selección de farmacia si eres gerente
                         if(userData.role === 'gerente') document.getElementById('employee-pharmacy').value = userData.pharmacy_id;
                         await loadUsers(pharmacyFilter ? pharmacyFilter.value : null);
                     }
+                } else {
+                     showNotification("Error inesperado al crear el usuario en Auth.", "error");
+                     console.error("SignUp successful but no user data returned:", authData);
                 }
             });
              
@@ -657,22 +853,24 @@
              const employeePharmacySelect = document.getElementById('employee-pharmacy');
              const nullPharmacyOption = employeePharmacySelect.querySelector('option[value="null"]');
 
-            employeeRoleSelect.addEventListener('change', () => {
-                 const selectedRole = employeeRoleSelect.value;
-                if ((selectedRole === 'gestor' || selectedRole === 'administrador') && nullPharmacyOption) {
-                    nullPharmacyOption.style.display = 'block';
-                 } else if (nullPharmacyOption) {
-                    nullPharmacyOption.style.display = 'none';
-                    if (employeePharmacySelect.value === 'null') employeePharmacySelect.value = '';
-                }
-            });
+             if(employeeRoleSelect && employeePharmacySelect && nullPharmacyOption){ // Asegurarse que existen
+                 employeeRoleSelect.addEventListener('change', () => {
+                     const selectedRole = employeeRoleSelect.value;
+                     // Mostrar "Sin asignar" solo si se selecciona Gestor o Administrador y eres Administrador
+                    nullPharmacyOption.style.display = (userData.role === 'administrador' && (selectedRole === 'gestor' || selectedRole === 'administrador')) ? 'block' : 'none';
+                    
+                    // Si se cambia a un rol que no puede estar sin asignar, y estaba seleccionado "Sin asignar", limpiar
+                    if (employeePharmacySelect.value === 'null' && !['gestor', 'administrador'].includes(selectedRole)) {
+                         employeePharmacySelect.value = '';
+                    }
+                 });
+             }
         }
         
         if(pharmacyFilter) pharmacyFilter.addEventListener('change', () => loadUsers(pharmacyFilter.value));
 
         // --- LÓGICA DE UI ---
         const setupUIForUser = () => {
-             // **CORRECCIÓN:** Convertir a mayúsculas
             userDisplayName.textContent = (userData.username || currentUser.email).toUpperCase(); 
             const roleCapitalized = userData.role.charAt(0).toUpperCase() + userData.role.slice(1);
             document.getElementById('user-role').textContent = `Rol: ${roleCapitalized}`;
@@ -692,10 +890,12 @@
              }
              if (rolesToShow.length > 0) {
                  try {
-                    document.querySelectorAll(rolesToShow.join(', ')).forEach(el => el.style.display = 'block');
+                    // Seleccionar elementos dentro del contexto de appView para asegurar que existen
+                    appView.querySelectorAll(rolesToShow.join(', ')).forEach(el => el.style.display = 'block');
                  } catch (e) { console.error("Error applying role visibility:", e); }
              }
 
+             // Ajustar visibilidad de opciones en selects
              const gerenteOption = document.querySelector('#employee-role option[value="gerente"]');
              const gestorOption = document.querySelector('#employee-role option[value="gestor"]');
              const nullPharmacyOption = document.querySelector('#employee-pharmacy option[value="null"]');
@@ -713,6 +913,13 @@
                 if (!viewId) return; 
                 document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `${viewId}-view`));
                 document.getElementById('view-title').textContent = e.currentTarget.getAttribute('title');
+                
+                // Recargar datos dinámicos al cambiar a ciertas vistas
+                 if (viewId === 'config' && ['administrador', 'gestor', 'gerente'].includes(userData.role)) {
+                    loadUsers(pharmacyFilter ? pharmacyFilter.value : null);
+                 } else if (viewId === 'services' /* && ['administrador', 'gestor', 'gerente'].includes(userData.role) */) { // Quitar restricción de rol aquí, todos deben poder cargarlos
+                     loadServices();
+                 }
             });
         });
 
@@ -738,6 +945,15 @@
                  userData = { role: 'empleado', pharmacy_id: null };
                  managedPharmacies = [];
                  centralEmail = null;
+                 // Limpiar selects y listas al cerrar sesión
+                 const employeePharmacySelect = document.getElementById('employee-pharmacy');
+                 if(employeePharmacySelect) employeePharmacySelect.innerHTML = '<option value="">Seleccionar farmacia...</option>';
+                 if(pharmacyFilter) pharmacyFilter.innerHTML = '<option value="all">Todas las farmacias</option>';
+                 const teamList = document.getElementById('team-members-list');
+                 if(teamList) teamList.innerHTML = '';
+                 const serviceList = document.getElementById('services-list');
+                 if(serviceList) serviceList.innerHTML = '';
+
                 showLoginView();
             } else if (event === 'INITIAL_SESSION' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
                  console.log("Session valid event detected:", event);
