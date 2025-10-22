@@ -29,6 +29,8 @@
             align-items: center;
             justify-content: center;
         }
+        /* Clases para ocultar/mostrar elementos por rol */
+        .role-empleado, .role-gerente, .role-gestor, .role-administrador { display: none; }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -94,13 +96,15 @@
                 <a href="#" data-view="dashboard" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Dashboard"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></a>
                 <a href="#" data-view="calendar" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Calendario"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg></a>
                 <a href="#" data-view="appointments" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Gestión de Citas"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></a>
-                <a href="#" data-view="services" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Servicios"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15 1"/><path d="m9 11 4 4"/><path d="M5 19l-3 3"/></svg></a>
+                <!-- Ocultar servicios si no es al menos gerente -->
+                <a href="#" data-view="services" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor role-administrador" title="Servicios"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15 1"/><path d="m9 11 4 4"/><path d="M5 19l-3 3"/></svg></a>
                 <a href="#" data-view="objectives" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Objetivos"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></a>
-                <a href="#" data-view="reports" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Informes"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m16 14-3-3-2 2-3-3"/></svg></a>
-                <a href="#" data-view="config" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor" title="Configuración"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.4l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2.4l.15.08a2 2 0 0 0 .73 2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></a>
+                <!-- Ocultar informes y config si no es al menos gerente -->
+                <a href="#" data-view="reports" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor role-administrador" title="Informes"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m16 14-3-3-2 2-3-3"/></svg></a>
+                <a href="#" data-view="config" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white role-gerente role-gestor role-administrador" title="Configuración"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.4l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2.4l.15.08a2 2 0 0 0 .73 2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></a>
                 
                 <div class="mt-auto flex flex-col items-center space-y-6">
-                    <!-- NUEVO: Botón Mi Perfil -->
+                    <!-- Botón Mi Perfil -->
                     <a href="#" data-view="profile" class="sidebar-icon p-2 rounded-lg text-gray-400 hover:text-white" title="Mi Perfil">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </a>
@@ -115,7 +119,6 @@
                 <header class="flex justify-between items-center p-4 bg-white dark:bg-gray-800 shadow">
                     <h1 id="view-title" class="text-2xl font-bold">Dashboard</h1>
                     <div id="user-info" class="text-right">
-                        <!-- ID cambiado a user-display-name -->
                         <p class="font-semibold" id="user-display-name"></p> 
                         <p class="text-sm text-gray-500" id="user-role"></p>
                     </div>
@@ -128,7 +131,7 @@
                     <div id="objectives-view" class="view">...</div>
                     <div id="reports-view" class="view">...</div>
                     
-                    <!-- NUEVO: Vista de Perfil de Usuario -->
+                    <!-- Vista de Perfil de Usuario -->
                     <div id="profile-view" class="view">
                          <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
                              <h2 class="text-2xl font-bold mb-6">Mi Perfil</h2>
@@ -153,23 +156,30 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Columna Izquierda: Gestión de Email y Empleados -->
                             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6">
-                                <div class="role-gerente role-gestor">
+                                <!-- Email central visible para admin y gestor -->
+                                <div class="role-gestor role-administrador">
                                     <h3 class="font-bold">Email Central de Gestión</h3>
                                     <form id="config-central-email-form" class="flex gap-4 items-center">
                                         <input id="central-email" type="email" placeholder="gestion.trebol@gmail.com" required class="flex-grow p-2 rounded bg-gray-200 dark:bg-gray-700">
                                         <button type="submit" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Guardar</button>
                                     </form>
                                 </div>
-                                <div class="role-gerente role-gestor">
-                                    <h3 class="font-bold mt-4">Gestión de Empleados y Gerentes</h3>
+                                <!-- Creación de usuarios visible para admin, gestor y gerente -->
+                                <div class="role-gerente role-gestor role-administrador">
+                                    <h3 class="font-bold mt-4">Gestión de Usuarios</h3>
                                     <form id="create-employee-form" class="space-y-4">
                                         <input type="text" id="employee-username" placeholder="Nombre de usuario (ej: juan.perez)" required class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
                                         <select id="employee-role" required class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
                                             <option value="empleado">Empleado</option>
-                                            <option value="gerente" class="role-gestor" style="display: none;">Gerente</option>
+                                            <!-- Opción Gerente visible para Gestor y Admin -->
+                                            <option value="gerente" class="role-gestor role-administrador">Gerente</option>
+                                            <!-- Opción Gestor visible solo para Admin -->
+                                            <option value="gestor" class="role-administrador">Gestor</option>
                                         </select>
                                         <select id="employee-pharmacy" required class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
                                             <option value="">Seleccionar farmacia...</option>
+                                            <!-- Opción "Sin asignar" solo para Admin al crear Gestores -->
+                                             <option value="null" class="role-administrador">Sin asignar (para Gestores/Admin)</option>
                                         </select>
                                         <button type="submit" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">Crear Usuario</button>
                                     </form>
@@ -177,7 +187,8 @@
                             </div>
                             <!-- Columna Derecha: Gestión de Farmacias y Miembros del Equipo -->
                             <div class="space-y-6">
-                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6 role-gestor">
+                                <!-- Gestión de Farmacias solo para Gestor y Admin -->
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6 role-gestor role-administrador">
                                     <div>
                                         <h3 class="font-bold">Gestión de Farmacias</h3>
                                          <form id="create-pharmacy-form" class="space-y-4 mt-4">
@@ -191,10 +202,12 @@
                                         <ul id="pharmacies-list" class="mt-2 space-y-2"></ul>
                                     </div>
                                 </div>
-                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6 role-gerente role-gestor">
+                                <!-- Lista de miembros visible para Admin, Gestor y Gerente -->
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-6 role-gerente role-gestor role-administrador">
                                     <div>
                                         <h3 class="font-bold">Miembros del Equipo</h3>
-                                        <div class="mt-4 role-gestor" style="display: none;">
+                                        <!-- Filtro visible solo para Admin y Gestor -->
+                                        <div class="mt-4 role-gestor role-administrador">
                                             <label for="pharmacy-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por Farmacia</label>
                                             <select id="pharmacy-filter" class="w-full p-2 mt-1 rounded bg-gray-200 dark:bg-gray-700"></select>
                                         </div>
@@ -244,7 +257,7 @@
         const updatePasswordModal = document.getElementById('update-password-modal');
         const updatePasswordForm = document.getElementById('update-password-form');
         const changePasswordForm = document.getElementById('change-password-form');
-        const userDisplayName = document.getElementById('user-display-name'); // <-- Referencia al elemento
+        const userDisplayName = document.getElementById('user-display-name'); 
         
         // --- FUNCIÓN DE NOTIFICACIONES ---
         const showNotification = (message, type = 'success') => {
@@ -276,38 +289,71 @@
         // --- LÓGICA DE GESTIÓN DE EQUIPO ---
         const loadUsers = async (pharmacyId = null) => {
             const teamList = document.getElementById('team-members-list');
+             if (!teamList) return; // Si la lista no está visible, no hacer nada
             teamList.innerHTML = '<p class="text-gray-500">Cargando equipo...</p>';
             try {
                 let query = supabaseClient.from('users').select('username, email, role, pharmacies(name)');
-                if (pharmacyId && pharmacyId !== 'all') {
-                    query = query.eq('pharmacy_id', pharmacyId);
-                }
+                // Si NO eres admin ni gestor y tienes pharmacy_id (eres gerente o empleado), filtra por tu farmacia
+                if (userData.role !== 'administrador' && userData.role !== 'gestor' && userData.pharmacy_id) {
+                     query = query.eq('pharmacy_id', userData.pharmacy_id);
+                } 
+                // Si eres admin o gestor y se seleccionó un filtro, aplícalo
+                else if (pharmacyId && pharmacyId !== 'all') {
+                    // Convertir a número si no es 'null' (para gestores sin asignar)
+                    const filterValue = pharmacyId === 'null' ? null : parseInt(pharmacyId);
+                     if (filterValue === null) {
+                         query = query.is('pharmacy_id', null);
+                     } else {
+                         query = query.eq('pharmacy_id', filterValue);
+                     }
+                } 
+                
                 const { data, error } = await query;
                 if (error) throw error;
+                
                 teamList.innerHTML = data.length === 0 ? '<p class="text-gray-500">No hay miembros que coincidan con el filtro.</p>' :
-                    data.map(user => `
+                    data.map(user => {
+                         const roleCapitalized = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+                         let roleBgColor = 'bg-green-200 text-green-800'; // Empleado
+                         if (user.role === 'gerente') roleBgColor = 'bg-indigo-200 text-indigo-800';
+                         else if (user.role === 'gestor') roleBgColor = 'bg-purple-200 text-purple-800';
+                         else if (user.role === 'administrador') roleBgColor = 'bg-red-200 text-red-800';
+
+                        return `
                         <li class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg flex justify-between items-center">
                             <div>
                                 <p class="font-bold text-gray-800 dark:text-gray-200">${user.username || 'Sin nombre'}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">${user.email}</p>
                             </div>
                             <div class="text-right">
-                                <p class="font-semibold text-sm px-2 py-1 rounded-full ${user.role === 'gerente' ? 'bg-indigo-200 text-indigo-800' : 'bg-green-200 text-green-800'}">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</p>
-                                <p class="text-xs text-gray-500 mt-1">${user.pharmacies ? user.pharmacies.name : 'Sin asignar'}</p>
+                                <p class="font-semibold text-sm px-2 py-1 rounded-full ${roleBgColor}">${roleCapitalized}</p>
+                                <p class="text-xs text-gray-500 mt-1">${user.pharmacies ? user.pharmacies.name : 'N/A'}</p>
                             </div>
-                        </li>`).join('');
+                        </li>`
+                    }).join('');
             } catch (error) {
                 console.error("Error cargando usuarios:", error.message);
                 teamList.innerHTML = '<p class="text-red-500">Error al cargar el equipo.</p>';
+                 // Específicamente, si el error es por permisos, guiar al usuario
+                if (error.message.includes('permission denied')) {
+                     showNotification("Error de permisos al cargar usuarios. Asegúrate de haber ejecutado el último script SQL.", "error");
+                }
             }
         };
 
         // --- LÓGICA DE GESTIÓN DE FARMACIAS ---
         const loadPharmacies = async () => {
+             if (userData.role === 'empleado') return; // Empleado no necesita cargar farmacias
             try {
-                const { data, error } = await supabaseClient.from('pharmacies').select('*');
+                let query = supabaseClient.from('pharmacies').select('*');
+                // Si eres gerente, solo cargar tu farmacia
+                 if (userData.role === 'gerente' && userData.pharmacy_id) {
+                     query = query.eq('id', userData.pharmacy_id);
+                 }
+                 
+                const { data, error } = await query;
                 if (error) throw error;
-                managedPharmacies = data;
+                managedPharmacies = data || []; // Asegurar que sea un array
                 
                 const pharmaciesList = document.getElementById('pharmacies-list');
                 if (pharmaciesList) pharmaciesList.innerHTML = managedPharmacies.map(p => `<li class="p-2 bg-gray-100 dark:bg-gray-700 rounded">${p.name}</li>`).join('');
@@ -315,18 +361,29 @@
                 const employeePharmacySelect = document.getElementById('employee-pharmacy');
                 employeePharmacySelect.innerHTML = '<option value="">Seleccionar farmacia...</option>';
                 pharmacyFilter.innerHTML = '<option value="all">Todas las farmacias</option>';
+                 
+                if (userData.role === 'administrador') {
+                    pharmacyFilter.innerHTML += '<option value="null">Gestores sin asignar</option>';
+                     employeePharmacySelect.innerHTML += '<option value="null" class="role-administrador">Sin asignar (para Gestores/Admin)</option>'; // Añadirlo también al form
+                }
                 
-                let pharmaciesForDropdown = (userData.role === 'gestor') ? managedPharmacies : 
-                    (userData.role === 'gerente' && userData.pharmacy_id) ? managedPharmacies.filter(p => p.id === userData.pharmacy_id) : [];
+                let pharmaciesForDropdown = managedPharmacies; // Admin y gestor ven todas
+                 if (userData.role === 'gerente') { // Gerente solo ve la suya
+                    pharmaciesForDropdown = managedPharmacies.filter(p => p.id === userData.pharmacy_id);
+                 }
                 
                 pharmaciesForDropdown.forEach(p => {
                     const option = document.createElement('option');
                     option.value = p.id;
                     option.textContent = p.name;
                     employeePharmacySelect.appendChild(option.cloneNode(true));
-                    pharmacyFilter.appendChild(option);
+                    if (userData.role === 'administrador' || userData.role === 'gestor') {
+                        pharmacyFilter.appendChild(option);
+                    }
                 });
+
                 if (userData.role === 'gerente') employeePharmacySelect.value = userData.pharmacy_id;
+
             } catch (error) {
                  console.error("Error cargando farmacias:", error.message);
                  showNotification("No se pudieron cargar las farmacias.", "error");
@@ -351,11 +408,14 @@
         
         // --- LÓGICA DE CONFIGURACIÓN ---
         const loadConfig = async () => {
-            const { data } = await supabaseClient.from('config').select('central_email').eq('id', 1).single();
-            if (data) {
-                centralEmail = data.central_email;
-                const centralEmailInput = document.getElementById('central-email');
-                if (centralEmailInput && centralEmail) centralEmailInput.value = centralEmail;
+            // Solo admin y gestor pueden ver/editar el email central
+            if (userData.role === 'administrador' || userData.role === 'gestor') {
+                const { data } = await supabaseClient.from('config').select('central_email').eq('id', 1).single();
+                if (data) {
+                    centralEmail = data.central_email;
+                    const centralEmailInput = document.getElementById('central-email');
+                    if (centralEmailInput && centralEmail) centralEmailInput.value = centralEmail;
+                }
             }
         };
 
@@ -374,25 +434,49 @@
         
         // --- LÓGICA DE AUTENTICACIÓN Y SESIÓN ---
         const initializeApp = async (session) => {
+             console.log("Initializing app for session:", session);
             currentUser = session.user;
             try {
+                // Obtener datos del perfil del usuario
                 const { data, error } = await supabaseClient.from('users').select('*').eq('id', currentUser.id).single();
-                if (error) throw error; 
-                userData = data || { role: 'empleado' };
-                setupUIForUser();
-                await loadConfig();
-                if(userData.role === 'gestor' || userData.role === 'gerente') {
-                    await loadPharmacies();
-                    await loadUsers();
+                if (error) { 
+                     if (error.code === 'PGRST116') { 
+                         console.warn("No se pudo obtener el perfil del usuario, posible problema de RLS. Asignando rol 'empleado'. ID:", currentUser.id);
+                         userData = { role: 'empleado', id: currentUser.id }; 
+                     } else { throw error; }
+                } else {
+                     userData = data || { role: 'empleado', id: currentUser.id }; 
                 }
-                showAppView();
+                
+                console.log("User data loaded:", userData);
+                setupUIForUser(); // Configurar UI con los datos obtenidos
+                
+                // Cargar datos adicionales según el rol
+                await loadConfig(); 
+                // Cargar farmacias para Admin, Gestor, Gerente
+                if (['administrador', 'gestor', 'gerente'].includes(userData.role)) {
+                    await loadPharmacies(); 
+                }
+                // Cargar usuarios para Admin, Gestor, Gerente
+                 if (['administrador', 'gestor', 'gerente'].includes(userData.role)) {
+                     await loadUsers(pharmacyFilter ? pharmacyFilter.value : null); 
+                 }
+                
+                showAppView(); // Mostrar la app principal
+
             } catch(error) {
-                console.error("Error crítico al iniciar sesión:", error.message);
-                showNotification("Error al obtener el perfil de usuario.", "error");
-                await supabaseClient.auth.signOut();
+                console.error("Error crítico durante la inicialización:", error.message);
+                 // Mostrar mensaje más específico si es de permisos
+                 if (error.message.includes('permission denied')) {
+                     showNotification("Error de permisos al iniciar. Revisa las reglas SQL.", "error");
+                 } else {
+                    showNotification("Error al cargar datos iniciales.", "error");
+                 }
+                await supabaseClient.auth.signOut(); // Desloguear si hay error grave
                 showLoginView();
             }
         };
+
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -401,74 +485,81 @@
             const password = document.getElementById('password').value;
             let email = identifier;
 
+            // **CORRECCIÓN:** Convertir a minúsculas ANTES de buscar
+            const usernameToSearch = identifier.toLowerCase(); 
+
             if (!identifier.includes('@')) {
-                // CORRECCIÓN: Intentar buscar el email correspondiente al username
+                console.log(`Attempting to find email for username: ${usernameToSearch}`); // Usar la versión en minúsculas
                 try {
                     const { data, error } = await supabaseClient
                         .from('users')
                         .select('email')
-                        .eq('username', identifier)
-                        .single();
-                    
-                    if (error || !data) throw new Error('Usuario no encontrado');
+                        .eq('username', usernameToSearch) // Buscar con minúsculas
+                        .maybeSingle(); 
+
+                    console.log("Username lookup result - Data:", data, "Error:", error);
+
+                    if (error && error.code !== 'PGRST116') { // Ignorar PGROST116 (0 resultados) pero no otros errores
+                        throw error; 
+                    }
+                    if (!data) { 
+                        loginError.textContent = 'Nombre de usuario no encontrado.'; 
+                        console.warn(`Username "${usernameToSearch}" not found in users table.`);
+                        return; 
+                    }
                     email = data.email;
+                     console.log(`Email found for username ${usernameToSearch}: ${email}`); 
                 } catch (userError) {
-                    loginError.textContent = 'Usuario o contraseña incorrectos.';
-                    console.error("Error finding user by username:", userError);
+                    loginError.textContent = 'Error al buscar usuario.';
+                    console.error("Error finding user by username:", userError.message);
                     return; 
                 }
             }
             
-            // Proceder con el inicio de sesión usando el email (original o encontrado)
-            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) { 
-                loginError.textContent = 'Usuario o contraseña incorrectos.';
-                console.error("Login error:", error);
+            console.log(`Attempting sign in with email: ${email}`); 
+            const { error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (signInError) { 
+                if (signInError.message.includes('Invalid login credentials')) {
+                     loginError.textContent = 'Contraseña incorrecta.';
+                } else {
+                     loginError.textContent = 'Error al iniciar sesión.';
+                }
+                 console.error("Sign in error:", signInError); 
             }
             // onAuthStateChange se encargará del resto si el login es exitoso
         });
 
+
         logoutButton.addEventListener('click', async (e) => {
-            e.preventDefault(); // <-- Asegurarse de prevenir la acción por defecto
+            e.preventDefault(); 
             await supabaseClient.auth.signOut();
         });
 
         // --- LÓGICA DE RESTABLECIMIENTO DE CONTRASEÑA ---
-        forgotPasswordLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            resetPasswordModal.style.display = 'flex';
-        });
-
-        closeModalButton.addEventListener('click', () => {
-            resetPasswordModal.style.display = 'none';
-        });
+        forgotPasswordLink.addEventListener('click', (e) => { e.preventDefault(); resetPasswordModal.style.display = 'flex'; });
+        closeModalButton.addEventListener('click', () => { resetPasswordModal.style.display = 'none'; });
 
         resetPasswordForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const identifier = document.getElementById('reset-identifier-input').value.trim();
-            if (!identifier) return showNotification('Por favor, introduce tu usuario o email.', 'error');
+            if (!identifier) return showNotification('Introduce usuario o email.', 'error');
             let email = identifier;
+            const usernameToSearch = identifier.toLowerCase(); // Convertir a minúsculas
 
             if (!identifier.includes('@')) {
                  try {
-                    const { data, error } = await supabaseClient
-                        .from('users')
-                        .select('email')
-                        .eq('username', identifier)
-                        .single();
-                    
-                    if (error || !data) throw new Error('Usuario no encontrado');
+                    // Buscar con minúsculas
+                    const { data, error } = await supabaseClient.from('users').select('email').eq('username', usernameToSearch).maybeSingle(); 
+                    if (error && error.code !== 'PGRST116') throw error;
+                    if (!data) throw new Error('Usuario no encontrado');
                     email = data.email;
-                } catch (userError) {
-                    showNotification('No se encontró un usuario con ese nombre.', 'error');
-                    return; 
-                }
+                } catch (userError) { showNotification('Usuario no encontrado.', 'error'); return; }
             }
 
             const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split('#')[0] });
             if (error) { showNotification('Error al enviar el correo.', 'error'); } 
             else {
-                showNotification('Se ha enviado un enlace de recuperación al email central.', 'success');
+                showNotification('Enlace de recuperación enviado al email central.', 'success');
                 resetPasswordModal.style.display = 'none';
             }
         });
@@ -480,19 +571,17 @@
             const errorElement = document.getElementById('update-password-error');
             errorElement.textContent = '';
 
-            if (newPassword.length < 6) { errorElement.textContent = 'La contraseña debe tener al menos 6 caracteres.'; return; }
+            if (newPassword.length < 6) { errorElement.textContent = 'Mínimo 6 caracteres.'; return; }
             if (newPassword !== confirmPassword) { errorElement.textContent = 'Las contraseñas no coinciden.'; return; }
 
             const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
-            if (error) {
-                errorElement.textContent = 'Error al actualizar la contraseña. Inténtalo de nuevo.';
-            } else {
-                showNotification('Contraseña actualizada con éxito.', 'success');
+            if (error) { errorElement.textContent = 'Error al actualizar.'; } 
+            else {
+                showNotification('Contraseña actualizada.', 'success');
                 updatePasswordModal.style.display = 'none';
             }
         });
         
-        // Lógica para el formulario de cambio de contraseña en el perfil
         changePasswordForm.addEventListener('submit', async (e) => {
              e.preventDefault();
             const newPassword = document.getElementById('change-new-password').value;
@@ -500,15 +589,13 @@
             const errorElement = document.getElementById('change-password-error');
             errorElement.textContent = '';
 
-            if (newPassword.length < 6) { errorElement.textContent = 'La contraseña debe tener al menos 6 caracteres.'; return; }
+            if (newPassword.length < 6) { errorElement.textContent = 'Mínimo 6 caracteres.'; return; }
             if (newPassword !== confirmPassword) { errorElement.textContent = 'Las contraseñas no coinciden.'; return; }
             
             const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
-             if (error) {
-                errorElement.textContent = 'Error al actualizar la contraseña.';
-                console.error("Change password error:", error);
-            } else {
-                showNotification('Contraseña actualizada con éxito.', 'success');
+             if (error) { errorElement.textContent = 'Error al actualizar.'; } 
+             else {
+                showNotification('Contraseña actualizada.', 'success');
                 changePasswordForm.reset();
             }
         });
@@ -520,57 +607,102 @@
                 e.preventDefault();
                 const username = document.getElementById('employee-username').value.trim().toLowerCase().replace(/\s+/g, '.');
                 const role = document.getElementById('employee-role').value;
-                const pharmacy_id = document.getElementById('employee-pharmacy').value;
-                if (!username || !role || !pharmacy_id) return showNotification("Todos los campos son obligatorios.", "error");
-                if (!centralEmail) return showNotification("Guarda un email central válido primero.", "error");
+                let pharmacy_id = document.getElementById('employee-pharmacy').value;
+                 if (pharmacy_id === 'null' || (role === 'gestor' && pharmacy_id === '')) { 
+                     pharmacy_id = null; 
+                 } else if (!pharmacy_id && role !== 'gestor' && role !== 'administrador') { // Admin también podría no tener farmacia
+                     return showNotification("Debes seleccionar una farmacia para este rol.", "error");
+                 } else if (pharmacy_id) {
+                     pharmacy_id = parseInt(pharmacy_id); 
+                 } else {
+                      pharmacy_id = null; // Asegurar que sea null si está vacío para admin/gestor
+                 }
+
+                if (!username || !role) return showNotification("Nombre de usuario y rol son obligatorios.", "error");
+                if (!centralEmail) return showNotification("Guarda un email central válido primero.", "error"); 
+
                 const [base, domain] = centralEmail.split('@');
                 const email = `${base}+${username}@${domain}`;
                 const password = Math.random().toString(36).slice(-10) + "A1!";
+                
                 const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+                
                 if (authError) return showNotification(authError.message, "error");
+                
                 if (authData.user) {
                     const { error: profileError } = await supabaseClient.from('users').insert({ id: authData.user.id, role, username, email, pharmacy_id });
-                    if (profileError) { showNotification("Usuario creado, pero no se pudo guardar su perfil.", "error"); } 
-                    else {
+                    if (profileError) { 
+                        showNotification("Usuario creado, pero no se guardó el perfil.", "error"); 
+                        console.error("Profile insert error:", profileError);
+                    } else {
                         showNotification(`Usuario ${username} (${role}) creado.`, "success");
-                        await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split('#')[0] });
+                         if (role !== 'administrador') {
+                            await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split('#')[0] });
+                         }
                         createEmployeeForm.reset();
                         if(userData.role === 'gerente') document.getElementById('employee-pharmacy').value = userData.pharmacy_id;
-                        await loadUsers(pharmacyFilter.value);
+                        await loadUsers(pharmacyFilter ? pharmacyFilter.value : null);
                     }
+                }
+            });
+             
+             const employeeRoleSelect = document.getElementById('employee-role');
+             const employeePharmacySelect = document.getElementById('employee-pharmacy');
+             const nullPharmacyOption = employeePharmacySelect.querySelector('option[value="null"]');
+
+            employeeRoleSelect.addEventListener('change', () => {
+                 const selectedRole = employeeRoleSelect.value;
+                if ((selectedRole === 'gestor' || selectedRole === 'administrador') && nullPharmacyOption) {
+                    nullPharmacyOption.style.display = 'block';
+                 } else if (nullPharmacyOption) {
+                    nullPharmacyOption.style.display = 'none';
+                    if (employeePharmacySelect.value === 'null') employeePharmacySelect.value = '';
                 }
             });
         }
         
-        pharmacyFilter.addEventListener('change', () => loadUsers(pharmacyFilter.value));
+        if(pharmacyFilter) pharmacyFilter.addEventListener('change', () => loadUsers(pharmacyFilter.value));
 
         // --- LÓGICA DE UI ---
         const setupUIForUser = () => {
-             // CORRECCIÓN: Usar userData.username si existe, sino el email
             userDisplayName.textContent = userData.username || currentUser.email; 
-            document.getElementById('user-role').textContent = `Rol: ${userData.role}`;
+            const roleCapitalized = userData.role.charAt(0).toUpperCase() + userData.role.slice(1);
+            document.getElementById('user-role').textContent = `Rol: ${roleCapitalized}`;
             
-            // Llenar datos del perfil
             document.getElementById('profile-username').textContent = userData.username || 'No definido';
             document.getElementById('profile-email').textContent = currentUser.email;
-            document.getElementById('profile-role').textContent = userData.role.charAt(0).toUpperCase() + userData.role.slice(1);
+            document.getElementById('profile-role').textContent = roleCapitalized;
 
-            document.querySelectorAll('.role-gerente, .role-gestor').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.role-empleado, .role-gerente, .role-gestor, .role-administrador').forEach(el => el.style.display = 'none');
             
-            if (userData.role === 'gerente') {
-                document.querySelectorAll('.role-gerente').forEach(el => el.style.display = 'block');
-            }
-            if (userData.role === 'gestor') {
-                document.querySelectorAll('.role-gerente, .role-gestor').forEach(el => el.style.display = 'block');
-                const gerenteOption = document.querySelector('#employee-role option[value="gerente"]');
-                if (gerenteOption) gerenteOption.style.display = 'block';
-            }
+             const rolesToShow = [];
+             switch (userData.role) {
+                 case 'administrador': rolesToShow.push('.role-administrador', '.role-gestor', '.role-gerente', '.role-empleado'); break;
+                 case 'gestor': rolesToShow.push('.role-gestor', '.role-gerente', '.role-empleado'); break;
+                 case 'gerente': rolesToShow.push('.role-gerente', '.role-empleado'); break;
+                 case 'empleado': rolesToShow.push('.role-empleado'); break;
+             }
+             if (rolesToShow.length > 0) {
+                 try {
+                    document.querySelectorAll(rolesToShow.join(', ')).forEach(el => el.style.display = 'block');
+                 } catch (e) { console.error("Error applying role visibility:", e); }
+             }
+
+             const gerenteOption = document.querySelector('#employee-role option[value="gerente"]');
+             const gestorOption = document.querySelector('#employee-role option[value="gestor"]');
+             const nullPharmacyOption = document.querySelector('#employee-pharmacy option[value="null"]');
+
+             if(gerenteOption) gerenteOption.style.display = (userData.role === 'administrador' || userData.role === 'gestor') ? 'block' : 'none';
+             if(gestorOption) gestorOption.style.display = (userData.role === 'administrador') ? 'block' : 'none';
+             if(nullPharmacyOption) nullPharmacyOption.style.display = (userData.role === 'administrador') ? 'block' : 'none';
+
         };
 
         document.querySelectorAll('.sidebar-icon').forEach(link => {
             link.addEventListener('click', e => {
                 e.preventDefault();
                 const viewId = e.currentTarget.dataset.view;
+                if (!viewId) return; 
                 document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `${viewId}-view`));
                 document.getElementById('view-title').textContent = e.currentTarget.getAttribute('title');
             });
@@ -578,21 +710,37 @@
 
         // --- INICIALIZACIÓN Y MANEJO DE ESTADO DE AUTENTICACIÓN ---
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
+             console.log("Auth event:", event, "Session:", session); 
             if (event === 'PASSWORD_RECOVERY') {
+                 console.log("Password recovery event detected");
                 updatePasswordModal.style.display = 'flex';
                 loginView.style.display = 'none';
                 appView.style.display = 'none';
-            } else if (session) {
-                // Si hay una sesión y el modal de actualización está abierto, 
-                // significa que la contraseña se acaba de actualizar. Lo cerramos.
+            } else if (event === 'SIGNED_IN') {
+                 console.log("Signed in event detected");
                 if (updatePasswordModal.style.display === 'flex') {
+                    console.log("Closing update password modal on sign in");
                     updatePasswordModal.style.display = 'none';
                 }
-                await initializeApp(session);
-            } else {
+                if (session) { await initializeApp(session); } 
+                else { showLoginView(); }
+            } else if (event === 'SIGNED_OUT') {
+                 console.log("Signed out event detected");
+                 currentUser = null;
+                 userData = { role: 'empleado', pharmacy_id: null };
+                 managedPharmacies = [];
+                 centralEmail = null;
                 showLoginView();
+            } else if (event === 'INITIAL_SESSION' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
+                 console.log("Session valid event detected:", event);
+                 if (session) {
+                      if (!currentUser || currentUser.id !== session.user.id || event === 'USER_UPDATED') {
+                          await initializeApp(session);
+                      }
+                 } else { showLoginView(); }
             }
         });
+
     </script>
 </body>
 </html>
