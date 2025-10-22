@@ -500,7 +500,9 @@
                     console.log("Username lookup result - Data:", data, "Error:", error);
 
                     if (error && error.code !== 'PGRST116') { // Ignorar PGROST116 (0 resultados) pero no otros errores
-                        throw error; 
+                        // Loggear el error real para depuración
+                        console.error("Database error during username lookup:", error);
+                        throw new Error('Error al conectar con la base de datos'); 
                     }
                     if (!data) { 
                         loginError.textContent = 'Nombre de usuario no encontrado.'; 
@@ -510,7 +512,12 @@
                     email = data.email;
                      console.log(`Email found for username ${usernameToSearch}: ${email}`); 
                 } catch (userError) {
-                    loginError.textContent = 'Error al buscar usuario.';
+                    // Mostrar el mensaje de error específico si es "Usuario no encontrado"
+                    if (userError.message === 'Usuario no encontrado') {
+                        loginError.textContent = 'Nombre de usuario no encontrado.';
+                    } else {
+                        loginError.textContent = 'Error al buscar usuario.'; // Error genérico para otros problemas
+                    }
                     console.error("Error finding user by username:", userError.message);
                     return; 
                 }
@@ -665,7 +672,8 @@
 
         // --- LÓGICA DE UI ---
         const setupUIForUser = () => {
-            userDisplayName.textContent = userData.username || currentUser.email; 
+             // **CORRECCIÓN:** Convertir a mayúsculas
+            userDisplayName.textContent = (userData.username || currentUser.email).toUpperCase(); 
             const roleCapitalized = userData.role.charAt(0).toUpperCase() + userData.role.slice(1);
             document.getElementById('user-role').textContent = `Rol: ${roleCapitalized}`;
             
