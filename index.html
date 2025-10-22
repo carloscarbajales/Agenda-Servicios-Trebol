@@ -115,7 +115,8 @@
                 <header class="flex justify-between items-center p-4 bg-white dark:bg-gray-800 shadow">
                     <h1 id="view-title" class="text-2xl font-bold">Dashboard</h1>
                     <div id="user-info" class="text-right">
-                        <p class="font-semibold" id="user-name"></p>
+                        <!-- ID cambiado a user-display-name -->
+                        <p class="font-semibold" id="user-display-name"></p> 
                         <p class="text-sm text-gray-500" id="user-role"></p>
                     </div>
                 </header>
@@ -243,6 +244,7 @@
         const updatePasswordModal = document.getElementById('update-password-modal');
         const updatePasswordForm = document.getElementById('update-password-form');
         const changePasswordForm = document.getElementById('change-password-form');
+        const userDisplayName = document.getElementById('user-display-name'); // <-- Referencia al elemento
         
         // --- FUNCIÓN DE NOTIFICACIONES ---
         const showNotification = (message, type = 'success') => {
@@ -400,16 +402,34 @@
             let email = identifier;
 
             if (!identifier.includes('@')) {
-                const { data, error } = await supabaseClient.from('users').select('email').eq('username', identifier).single();
-                if (error || !data) { loginError.textContent = 'Usuario o contraseña incorrectos.'; return; }
-                email = data.email;
+                // CORRECCIÓN: Intentar buscar el email correspondiente al username
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('users')
+                        .select('email')
+                        .eq('username', identifier)
+                        .single();
+                    
+                    if (error || !data) throw new Error('Usuario no encontrado');
+                    email = data.email;
+                } catch (userError) {
+                    loginError.textContent = 'Usuario o contraseña incorrectos.';
+                    console.error("Error finding user by username:", userError);
+                    return; 
+                }
             }
-
+            
+            // Proceder con el inicio de sesión usando el email (original o encontrado)
             const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) { loginError.textContent = 'Usuario o contraseña incorrectos.'; }
+            if (error) { 
+                loginError.textContent = 'Usuario o contraseña incorrectos.';
+                console.error("Login error:", error);
+            }
+            // onAuthStateChange se encargará del resto si el login es exitoso
         });
 
-        logoutButton.addEventListener('click', async () => {
+        logoutButton.addEventListener('click', async (e) => {
+            e.preventDefault(); // <-- Asegurarse de prevenir la acción por defecto
             await supabaseClient.auth.signOut();
         });
 
@@ -430,9 +450,19 @@
             let email = identifier;
 
             if (!identifier.includes('@')) {
-                const { data, error } = await supabaseClient.from('users').select('email').eq('username', identifier).single();
-                if (error || !data) return showNotification('No se encontró un usuario con ese nombre.', 'error');
-                email = data.email;
+                 try {
+                    const { data, error } = await supabaseClient
+                        .from('users')
+                        .select('email')
+                        .eq('username', identifier)
+                        .single();
+                    
+                    if (error || !data) throw new Error('Usuario no encontrado');
+                    email = data.email;
+                } catch (userError) {
+                    showNotification('No se encontró un usuario con ese nombre.', 'error');
+                    return; 
+                }
             }
 
             const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split('#')[0] });
@@ -516,7 +546,8 @@
 
         // --- LÓGICA DE UI ---
         const setupUIForUser = () => {
-            document.getElementById('user-name').textContent = currentUser.email;
+             // CORRECCIÓN: Usar userData.username si existe, sino el email
+            userDisplayName.textContent = userData.username || currentUser.email; 
             document.getElementById('user-role').textContent = `Rol: ${userData.role}`;
             
             // Llenar datos del perfil
